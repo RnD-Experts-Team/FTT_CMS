@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\HeroSectionController;
 
 Route::middleware('auth:sanctum')
-    ->prefix('hero-sections')
+    ->prefix('hero_sections')
     ->group(function () {
 
         Route::get('/', [HeroSectionController::class, 'index']);
