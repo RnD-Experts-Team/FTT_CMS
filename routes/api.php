@@ -16,4 +16,5 @@ Route::middleware('api')->group(function () {
     require __DIR__.'/api/benefits-items.php';
     require __DIR__.'/api/needs-sections.php';
     require __DIR__.'/api/needs-items.php';
+    require __DIR__.'/api/footer-contacts.php';
 });
