@@ -21,6 +21,12 @@ class HeroSectionUpdateRequest extends FormRequest
             'button1_link' => ['sometimes','required','string','max:1024'],
             'button2_text' => ['sometimes','required','string','max:100'],
             'button2_link' => ['sometimes','required','string','max:1024'],
-        ];
+
+             'media_files' => ['sometimes','array'],
+            'media_files.*' => ['file','mimes:jpg,jpeg,png,mp4,mov','max:51200'],
+
+            'sort_orders' => ['sometimes','array'],
+            'sort_orders.*' => ['nullable','integer','min:0'],
+         ];
     }
 }

@@ -32,20 +32,25 @@ class HeroSectionController extends Controller
                 'success' => false,
                 'message' => 'Failed to fetch hero sections',
                 'data' => [],
-                'meta' => ['error' => $e->getMessage()]
+                'meta' => [
+                    'error' => $e->getMessage()
+                ]
             ], 500);
         }
     }
 
-    public function update(
-        HeroSectionUpdateRequest $request,
-        HeroSection $heroSection
-    ): JsonResponse {
+    public function update(HeroSectionUpdateRequest $request, HeroSection $heroSection): JsonResponse
+    {
         try {
-            $updated = $this->service->update(
-                $heroSection,
-                $request->validated()
-            );
+            // مهم: validated() ما بيرجع الملفات أحيانًا بشكل مضمون مع form-data
+            // لذلك ندمج validated + الملفات مباشرة
+            $data = $request->validated();
+
+            if ($request->hasFile('media_files')) {
+                $data['media_files'] = $request->file('media_files'); // array of UploadedFile
+            }
+
+            $updated = $this->service->update($heroSection, $data);
 
             return response()->json([
                 'success' => true,
@@ -58,7 +63,9 @@ class HeroSectionController extends Controller
                 'success' => false,
                 'message' => 'Failed to update hero section',
                 'data' => [],
-                'meta' => ['error' => $e->getMessage()]
+                'meta' => [
+                    'error' => $e->getMessage()
+                ]
             ], 500);
         }
     }
