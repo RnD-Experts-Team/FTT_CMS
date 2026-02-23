@@ -11,6 +11,6 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('api')->group(function () {
 
     require __DIR__ . '/api/auth.php';
-   
+    require __DIR__ . '/api/cta.php';
 
 });
