@@ -13,4 +13,5 @@ Route::middleware('api')->group(function () {
     require __DIR__ . '/api/auth.php';
     require __DIR__ . '/api/cta.php';
     require __DIR__.'/api/benefits-sections.php';
+    require __DIR__.'/api/benefits-items.php';
 });
