@@ -19,10 +19,11 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
        
-        User::updateOrCreate([
-        'name' => 'Admin',
-        'email' => 'admin@example.com',
-        'password' => Hash::make('password123'),
-        ]);
+        // User::updateOrCreate([
+        // 'name' => 'Admin',
+        // 'email' => 'admin@example.com',
+        // 'password' => Hash::make('password123'),
+        // ]);
+        $this->call(BenefitsSectionSeeder::class);
     }
 }
