@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
         //$this->call(NeedsSectionSeeder::class);
         //$this->call(FooterContactSeeder::class);
         //$this->call(FooterSocialLinkSeeder::class);
-        $this->call(HeroSectionSeeder::class);
+        //$this->call(HeroSectionSeeder::class);
+        $this->call(FounderSectionWithMediaSeeder::class);
     }
 }
