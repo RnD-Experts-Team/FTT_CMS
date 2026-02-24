@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
         //  $this->call(TemptationSectionSeeder::class);
         // $this->call(OfferSectionSeeder::class);
          $this->call(SiteMetadataSeeder::class);
+         $this->call(GallerySectionSeeder::class);
 
     }
 }
