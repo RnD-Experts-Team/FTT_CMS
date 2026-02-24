@@ -28,4 +28,5 @@ Route::middleware('api')->group(function () {
     require __DIR__.'/api/offerRequirement.php';    
     require __DIR__.'/api/sitemetadata.php';    
     require __DIR__.'/api/gallarySection.php';    
+    require __DIR__.'/api/gallaryItems.php';    
 });
