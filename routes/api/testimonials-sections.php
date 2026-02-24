@@ -3,6 +3,11 @@
 use App\Http\Controllers\Api\TestimonialsSectionController;
 use Illuminate\Support\Facades\Route;
 
+Route::middleware('auth:sanctum')
+    ->prefix('testimonials-sections')
+    ->group(function () { 
 
-Route::get('/testimonials-sections', [TestimonialsSectionController::class, 'index']);
-Route::put('/testimonials-sections/{id}', [TestimonialsSectionController::class, 'update']);
+        
+    Route::get('/', [TestimonialsSectionController::class, 'index']);
+    Route::put('/{id}', [TestimonialsSectionController::class, 'update']);
+    });
