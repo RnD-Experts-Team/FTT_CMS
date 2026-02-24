@@ -20,4 +20,5 @@ Route::middleware('api')->group(function () {
     require __DIR__.'/api/footer-social-links.php';
     require __DIR__.'/api/hero-sections.php';
     require __DIR__.'/api/founder-sections.php';
+    require __DIR__.'/api/testimonials.php';
 });
