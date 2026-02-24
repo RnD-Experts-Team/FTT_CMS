@@ -30,6 +30,8 @@ class DatabaseSeeder extends Seeder
         //$this->call(FooterSocialLinkSeeder::class);
         //$this->call(HeroSectionSeeder::class);
         //$this->call(FounderSectionWithMediaSeeder::class);
-         $this->call(TestimonialsSectionsSeeder::class);
+        //  $this->call(TestimonialsSectionsSeeder::class);
+        //  $this->call(TemptationSectionSeeder::class);
+         $this->call(OfferSectionSeeder::class);
     }
 }
