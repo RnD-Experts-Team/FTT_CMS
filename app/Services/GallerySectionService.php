@@ -24,9 +24,39 @@ class GallerySectionService
         }
     }
 
-    // دالة لعرض جميع الأقسام
     public function index()
     {
-        return GallerySection::all();
+        // استرجاع جميع الـ GallerySection مع الـ media المرتبطة بها
+        $gallerySections = GallerySection::with(['items' => function ($query) {
+                $query->orderBy('sort_order', 'asc'); // ترتيب العناصر حسب sort_order
+                $query->with('image'); // تحميل الـ media المرتبطة بكل GalleryItem
+            }])
+            ->orderBy('id', 'desc') // ترتيب الـ GallerySection حسب ID تنازليًا
+            ->get();
+
+        // بناء الرد كما في المثال المطلوب
+        $data = $gallerySections->map(function ($section) {
+            return [
+                'gallery_section' => [
+                    'hook' => $section->hook,
+                    'title' => $section->title,
+                    'description' => $section->description,
+                    'images' => $section->items->map(function ($item) {
+                        return [
+                            'id' => $item->id,
+                            'image_url' => $item->image->path,  // الحصول على مسار الصورة من media
+                            'title' => $item->image->title,    // عنوان الصورة
+                            'description' => $item->description
+                        ];
+                    })
+                ]
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Gallery section retrieved successfully',
+            'data' => $data
+        ]);
     }
 }
