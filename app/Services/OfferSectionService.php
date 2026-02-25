@@ -55,8 +55,8 @@ class OfferSectionService
         }
     }
 
-    public function index()
+   public function index()
     {
-        return OfferSection::with('image')->get();
+        return OfferSection::with(['image', 'requirements'])->get();
     }
 }

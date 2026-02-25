@@ -13,7 +13,7 @@ class TestimonialService
      // تابع لجلب جميع Testimonials وترتيبها حسب sort_order
     public function getAll()
     {
-        return Testimonial::orderBy('sort_order', 'asc')->get();
+    return Testimonial::with('video')->orderBy('sort_order', 'asc')->get();
     }
 
     // تابع لجلب Testimonial واحد بناءً على الـ ID

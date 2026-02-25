@@ -11,7 +11,7 @@ class TemptationSectionService
     public function index()
     {
         // جلب بيانات TemptationSection مع تحميل الصورة المرتبطة بها
-        return TemptationSection::with('image')->get();
+        return TemptationSection::with(['image', 'requirements'])->get();
     }
     public function update(TemptationSection $section, array $data): TemptationSection
     {
