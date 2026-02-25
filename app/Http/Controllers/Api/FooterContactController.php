@@ -16,7 +16,7 @@ class FooterContactController extends Controller
         private readonly FooterContactService $service
     ) {}
 
-    public function index(FooterContactIndexRequest $request): JsonResponse
+    public function index(): JsonResponse
     {
         try {
             $data = $this->service->index();

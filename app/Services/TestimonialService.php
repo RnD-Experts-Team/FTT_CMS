@@ -5,8 +5,7 @@ namespace App\Services;
 use App\Models\Testimonial;
 use App\Models\Media;
 use Illuminate\Support\Facades\Storage;
-use FFMpeg\FFProbe;
-use Exception;
+ use getID3;
 use Symfony\Component\Process\Process;
 
 class TestimonialService
@@ -22,9 +21,11 @@ class TestimonialService
     {
         return Testimonial::findOrFail($id);
     }
-  public function create(array $data)
+
+
+    public function create(array $data)
     {
-          // Check if the sort_order is already in use
+        // Check if the sort_order is already in use
         $existingItem = Testimonial::where('sort_order', $data['sort_order'])->first();
         
         // If the sort_order already exists, increment it until it's unique
@@ -34,6 +35,7 @@ class TestimonialService
                 $existingItem = Testimonial::where('sort_order', $data['sort_order'])->first();
             } while ($existingItem);
         }
+
         // إذا كان هناك فيديو جديد، نقوم بحفظه
         if (isset($data['video'])) {
             $file = $data['video'];
@@ -44,7 +46,7 @@ class TestimonialService
             }
 
             // 2) استخراج أبعاد الفيديو من الملف المؤقت قبل التخزين
-            [$width, $height] = $this->getVideoDimensionsWithFfprobe($file->getRealPath());
+            [$width, $height] = $this->getVideoDimensionsWithGetID3($file->getRealPath());
 
             // 3) تخزين الفيديو
             $path = $file->store('uploads/videos', 'public');
@@ -72,7 +74,8 @@ class TestimonialService
     public function update(int $id, array $data)
     {
         $testimonial = Testimonial::findOrFail($id);
-          // Check if the sort_order is already in use
+
+        // Check if the sort_order is already in use
         $existingItem = Testimonial::where('sort_order', $data['sort_order'])->first();
         
         // If the sort_order already exists, increment it until it's unique
@@ -103,7 +106,7 @@ class TestimonialService
             }
 
             // 5) استخراج أبعاد الفيديو من الملف المؤقت
-            [$width, $height] = $this->getVideoDimensionsWithFfprobe($file->getRealPath());
+            [$width, $height] = $this->getVideoDimensionsWithGetID3($file->getRealPath());
 
             // 6) تخزين الفيديو الجديد
             $path = $file->store('uploads/videos', 'public');
@@ -143,31 +146,24 @@ class TestimonialService
         // Delete the testimonial
         $testimonial->delete();
     }
-    private function getVideoDimensionsWithFfprobe(string $filePath): array
+ 
+       // تابع لاستخراج أبعاد الفيديو باستخدام getID3
+    private function getVideoDimensionsWithGetID3(string $filePath): array
     {
-        // استخدام ffprobe لاستخراج أبعاد الفيديو
-        $process = new Process([
-            'ffprobe',
-            '-v', 'error',
-            '-select_streams', 'v:0',
-            '-show_entries', 'stream=width,height',
-            '-of', 'json',
-            $filePath,
-        ]);
+        // إنشاء كائن getID3
+        $getID3 = new getID3;
 
-        $process->run();
+        // تحليل الفيديو
+        $fileInfo = $getID3->analyze($filePath);
 
-        if (!$process->isSuccessful()) {
-            // إذا حدث فشل في عملية ffprobe، نرجع أبعادًا null
-            return [null, null];
+        // التحقق إذا كانت البيانات موجودة
+        if (isset($fileInfo['video'])) {
+            $width = $fileInfo['video']['resolution_x'] ?? 0;  // عرض الفيديو
+            $height = $fileInfo['video']['resolution_y'] ?? 0; // ارتفاع الفيديو
+        } else {
+            $width = 0;
+            $height = 0;
         }
-
-        // معالجة إخراج ffprobe لاستخراج الأبعاد
-        $json = json_decode($process->getOutput(), true);
-
-        $stream = $json['streams'][0] ?? null;
-        $width  = $stream['width'] ?? null;
-        $height = $stream['height'] ?? null;
 
         return [$width, $height];
     }

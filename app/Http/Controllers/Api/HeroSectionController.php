@@ -16,7 +16,7 @@ class HeroSectionController extends Controller
         private readonly HeroSectionService $service
     ) {}
 
-    public function index(HeroSectionIndexRequest $request): JsonResponse
+    public function index(): JsonResponse
     {
         try {
             $data = $this->service->index();

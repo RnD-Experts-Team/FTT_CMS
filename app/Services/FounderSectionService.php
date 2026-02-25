@@ -6,6 +6,7 @@ use App\Models\FounderSection;
 use App\Models\Media;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;
+  use getID3;
 
 class FounderSectionService
 {
@@ -14,8 +15,10 @@ class FounderSectionService
         return FounderSection::with('video')->get();
     }
 
+
     public function update(FounderSection $section, array $data)
     {
+        
         if (isset($data['video'])) {
             $file = $data['video'];
 
@@ -32,13 +35,13 @@ class FounderSectionService
                 $section->video->delete();
             }
 
-            // 3) استخراج أبعاد الفيديو من الملف المؤقت قبل التخزين
-            [$width, $height] = $this->getVideoDimensionsWithFfprobe($file->getRealPath());
+            // 3) استخراج أبعاد الفيديو من الملف المؤقت باستخدام getID3
+            [$width, $height] = $this->getVideoDimensionsWithGetID3($file->getRealPath());
 
             // 4) تخزين الفيديو
             $path = $file->store('uploads/videos', 'public');
 
-            // 5) إنشاء سجل Media
+            // 5) إنشاء سجل Media للفيديو
             $media = Media::create([
                 'path' => $path,
                 'type' => 'video',
@@ -46,43 +49,37 @@ class FounderSectionService
                 'width' => $width ?? 0,
                 'height' => $height ?? 0,
                 'size_bytes' => $file->getSize(),
-                'alt_text' => 'Founder Video',
-                'title' => 'Founder Uploaded Video',
-            ]);
+                'alt_text' => $data['alt_text'] ?? '',
+                'title' => $data['title_video'] ?? 'Founder Uploaded Video',
+              ]);
 
             $section->video_media_id = $media->id;
         }
 
+        // تحديث البيانات الأخرى في السجل
         $section->update(collect($data)->except('video')->toArray());
 
         return $section->load('video');
     }
 
-    private function getVideoDimensionsWithFfprobe(string $filePath): array
+    private function getVideoDimensionsWithGetID3(string $filePath): array
     {
-        // ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of json input.mp4
-        $process = new Process([
-            'ffprobe',
-            '-v', 'error',
-            '-select_streams', 'v:0',
-            '-show_entries', 'stream=width,height',
-            '-of', 'json',
-            $filePath,
-        ]);
+        // إنشاء كائن getID3
+        $getID3 = new getID3();
 
-        $process->run();
+        // تحليل الفيديو باستخدام getID3
+        $fileInfo = $getID3->analyze($filePath);
 
-        if (!$process->isSuccessful()) {
-            // إذا ffprobe غير موجود أو فشل، رجّع nulls
-            return [null, null];
+        // التأكد من وجود معلومات الفيديو
+        if (isset($fileInfo['video'])) {
+            $width = $fileInfo['video']['resolution_x'] ?? 0;  // عرض الفيديو
+            $height = $fileInfo['video']['resolution_y'] ?? 0; // ارتفاع الفيديو
+        } else {
+            $width = 0;
+            $height = 0;
         }
-
-        $json = json_decode($process->getOutput(), true);
-
-        $stream = $json['streams'][0] ?? null;
-        $width  = $stream['width'] ?? null;
-        $height = $stream['height'] ?? null;
 
         return [$width, $height];
     }
+     
 }

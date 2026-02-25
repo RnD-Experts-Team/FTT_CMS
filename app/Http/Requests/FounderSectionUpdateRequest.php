@@ -17,7 +17,9 @@ class FounderSectionUpdateRequest extends FormRequest
             'hook_text' => ['sometimes','required','string','max:255'],
             'title' => ['sometimes','required','string','max:255'],
             'description' => ['sometimes','required','string'],
-            'video' => ['sometimes','file','mimes:mp4,mov,avi','max:51200'] // 50MB
+            'video' => ['sometimes','file','mimes:mp4,mov,avi','max:51200'], // 50MB
+            'alt_text' => 'nullable|string|max:255',
+            'title_video' => 'nullable|string|max:255',
         ];
     }
 }

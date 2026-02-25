@@ -16,7 +16,7 @@ class FounderSectionController extends Controller
         private readonly FounderSectionService $service
     ) {}
 
-    public function index(FounderSectionIndexRequest $request): JsonResponse
+    public function index(): JsonResponse
     {
         try {
             $data = $this->service->index();
