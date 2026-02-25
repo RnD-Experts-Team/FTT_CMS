@@ -17,10 +17,10 @@ return new class extends Migration
                 ->constrained('hero_sections')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
-            $table->foreignId('media_id')
+            $table->foreignId('media_id')->nullable()
                 ->constrained('media')
                 ->cascadeOnUpdate()
-                ->restrictOnDelete();
+                ->nullOnDelete();
             $table->integer('sort_order')->default(0);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();

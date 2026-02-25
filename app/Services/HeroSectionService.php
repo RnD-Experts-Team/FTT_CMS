@@ -59,13 +59,23 @@ class HeroSectionService
     {
         return DB::transaction(function () use ($section, $data) {
 
-            // 1️⃣ تحديث بيانات النص فقط
+            // 1️⃣ تحديث بيانات النص فقط في hero_section
             $section->update(
                 collect($data)->except('media_files', 'alt_text', 'title_text')->toArray()
             );
 
-            // 2️⃣ حذف بيانات الـ HeroMedia القديمة أولاً
-            $section->media()->delete(); // حذف جميع السجلات المرتبطة في جدول hero_media
+            // 2️⃣ حذف البيانات القديمة في جدول hero_media و media
+            $section->media()->each(function ($heroMedia) {
+                // حذف media المرتبطة (الصورة أو الفيديو) من جدول media
+                if ($heroMedia->media) {
+                    // حذف الصورة أو الفيديو من التخزين
+                    Storage::disk('public')->delete($heroMedia->media->path);
+                    // حذف السجل في جدول media
+                    $heroMedia->media->delete();
+                }
+                // حذف السجل المرتبط في جدول hero_media
+                $heroMedia->delete();
+            });
 
             // 3️⃣ إذا كان هناك media جديدة → أضفها فقط (بدون حذف القديم)
             if (isset($data['media_files']) && is_array($data['media_files']) && count($data['media_files']) > 0) {
@@ -114,8 +124,8 @@ class HeroSectionService
                         'width' => (int)$width,
                         'height' => (int)$height,
                         'size_bytes' => (int)($file->getSize() ?? 0),
-                        'alt_text' => $data['alt_text'][$index] ?? 'Hero Media', // استخدام alt_text المناسب
-                        'title' => $data['title_text'][$index] ?? ($section->title ?? 'Hero') . ' Media', // استخدام title_text المناسب
+                        'alt_text' => $data['alt_text'][$index] ?? 'Hero Media',
+                        'title' => $data['title_text'][$index] ?? ($section->title ?? 'Hero') . ' Media',
                     ]);
 
                     // ربطها في hero_media مع sort_order جديد

@@ -9,5 +9,5 @@ Route::middleware('auth:sanctum')
 
         
     Route::get('/', [TestimonialsSectionController::class, 'index']);
-    Route::put('/{id}', [TestimonialsSectionController::class, 'update']);
+    Route::post('/{id}', [TestimonialsSectionController::class, 'update']);
     });
