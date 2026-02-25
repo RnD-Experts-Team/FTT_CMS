@@ -73,9 +73,31 @@ class SiteMetadataService
     }
 
      // دالة لاسترجاع بيانات الموقع مع الصور المرتبطة (Logo و Favicon)
-    public function getSiteMetadata(): ?SiteMetadata
+    public function getSiteMetadata()
     {
-        // تحميل البيانات مع الصور المرتبطة
-        return SiteMetadata::with(['logo', 'favicon'])->first(); // استخدام with لتحميل العلاقات
-    }
+          try {
+            // تحميل البيانات مع الصور المرتبطة (logo و favicon)
+            $siteMetadata = SiteMetadata::with(['logo', 'favicon'])->first();
+
+            // إرجاع الـ response مع البيانات المطلوبة
+            return response()->json([
+                'success' => true,
+                'message' => 'Site metadata updated successfully',
+                'data' => [
+                    'name' => $siteMetadata->name,
+                    'description' => $siteMetadata->description,
+                    'keywords' => $siteMetadata->keywords,
+                    'logo' => $siteMetadata->logo->url,  // استخدام الـ URL للـ logo
+                    'favicon' => $siteMetadata->favicon->url  // استخدام الـ URL للفافيكون
+                ],
+                'meta' => []
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch site metadata',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+ }
 }

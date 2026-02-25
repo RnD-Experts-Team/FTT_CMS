@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
         // 'email' => 'admin@example.com',
         // 'password' => Hash::make('password123'),
         // ]);
-        // $this->call(BenefitsSectionSeeder::class);
+        $this->call(BenefitsSectionSeeder::class);
         // $this->call(NeedsSectionSeeder::class);
         // $this->call(FooterContactSeeder::class);
         // $this->call(FooterSocialLinkSeeder::class);

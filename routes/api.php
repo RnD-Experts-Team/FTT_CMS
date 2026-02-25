@@ -31,4 +31,5 @@ Route::middleware('api')->group(function () {
     require __DIR__.'/api/gallarySection.php';    
     require __DIR__.'/api/gallaryItems.php';    
     require __DIR__.'/api/home.php';    
+    require __DIR__.'/api/gallary.php';    
 });

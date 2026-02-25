@@ -8,17 +8,50 @@ use App\Models\HeroMedia;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;
-  use getID3; // تأكد من استيراد مكتبة getID3 في بداية الملف
+  use getID3;  
 
 class HeroSectionService
 {
-   public function index()
+    public function index()
     {
-        return HeroSection::with(['media' => function ($query) {
-                $query->orderBy('sort_order', 'asc'); // ترتيب الـ media حسب sort_order
-            }, 'media.media']) // تحميل media داخل media نفسها
-            ->orderBy('id', 'desc') // ترتيب الـ HeroSection حسب ID تنازليًا
+        try {
+             $heroSections = HeroSection::with(['media' => function ($query) {
+                $query->orderBy('sort_order', 'asc');  
+            }, 'media.media'])  
+            ->orderBy('id', 'desc')  
             ->get();
+
+             $response = $heroSections->map(function ($heroSection) {
+                return [
+                    'subheader' => $heroSection->subheader,
+                    'title' => $heroSection->title,
+                    'description_html' => $heroSection->description_html,
+                    'media' => $heroSection->media->map(function ($mediaItem) {
+                        return [
+                            'id' => $mediaItem->id,
+                            'url' => $mediaItem->media->url,  
+                        ];
+                    }),
+                    'button1_text' => $heroSection->button1_text,
+                    'button1_link' => $heroSection->button1_link,
+                    'button2_text' => $heroSection->button2_text,
+                    'button2_link' => $heroSection->button2_link,
+                ];
+            });
+
+             return response()->json([
+                'success' => true,
+                'message' => 'Hero section updated successfully',
+                'data' => $response,
+                'meta' => []
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch hero section',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
 
@@ -94,8 +127,39 @@ class HeroSectionService
                 }
             }
 
-            return $section->load('media.media');
+            // تنسيق البيانات وإرجاع الاستجابة المطلوبة بعد التحديث
+            $updatedSection = $this->getHeroSectionData($section);  // استدعاء التابع المشترك
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Hero section updated successfully',
+                'data' => $updatedSection,
+                'meta' => []
+            ]);
         });
+    }
+
+    private function getHeroSectionData(HeroSection $section)
+    {
+         $section->load(['media' => function ($query) {
+            $query->orderBy('sort_order', 'asc');  
+        }, 'media.media']);  
+
+         return [
+            'subheader' => $section->subheader,
+            'title' => $section->title,
+            'description_html' => $section->description_html,
+            'media' => $section->media->map(function ($mediaItem) {
+                return [
+                    'id' => $mediaItem->id,
+                    'url' => $mediaItem->media->url,  
+                ];
+            }),
+            'button1_text' => $section->button1_text,
+            'button1_link' => $section->button1_link,
+            'button2_text' => $section->button2_text,
+            'button2_link' => $section->button2_link,
+        ];
     }
 
  
