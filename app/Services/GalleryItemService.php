@@ -6,8 +6,8 @@ use App\Models\GalleryItem;
 use App\Models\Media;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
-
-class GalleryItemService
+use Illuminate\Support\Facades\DB;
+ class GalleryItemService
 {
     // دالة لإنشاء GalleryItem جديد
     public function store(array $data, $image): GalleryItem
@@ -68,56 +68,71 @@ class GalleryItemService
         return GalleryItem::with('image')->find($id);
     }
 
-    // دالة لتحديث GalleryItem
+
+
     public function update(int $id, array $data, $image = null): GalleryItem
     {
         try {
-            // البحث عن العنصر بناءً على الـ ID
-            $galleryItem = GalleryItem::find($id);
-            if (!$galleryItem) {
-                throw new \Exception('Gallery item not found.');
-            }
-
-            // التحقق من فريدية sort_order
-            if (isset($data['sort_order'])) {
-                $existingSortOrder = GalleryItem::where('sort_order', $data['sort_order'])->exists();
-                while ($existingSortOrder) {
-                    $data['sort_order'] += 1;  // إضافة 1 إلى sort_order حتى يصبح فريدًا
-                    $existingSortOrder = GalleryItem::where('sort_order', $data['sort_order'])->exists();
+            // بدء المعاملة لضمان الأمان
+            return DB::transaction(function () use ($id, $data, $image) {
+                // البحث عن العنصر بناءً على الـ ID
+                $galleryItem = GalleryItem::with('image')->find($id);
+                if (!$galleryItem) {
+                    throw new \Exception('Gallery item not found.');
                 }
-            }
 
-            // إذا كانت هناك صورة جديدة، نقوم بحذف الصورة القديمة وإضافة الجديدة
-            if ($image) {
-                // حذف الصورة القديمة إذا كانت موجودة
-                if ($galleryItem->image) {
+                // التحقق من فريدية sort_order
+                if (isset($data['sort_order'])) {
+                    $so = (int)$data['sort_order'];
+                    while (
+                        GalleryItem::where('sort_order', $so)
+                            ->where('id', '!=', $galleryItem->id)
+                            ->exists()
+                    ) {
+                        $so++;
+                    }
+                    $data['sort_order'] = $so;
+                }
+
+                // حفظ الصورة الجديدة إذا كانت موجودة
+                if ($image) {
+                    // تخزين الصورة الجديدة في المجلد
+                    $imagePath = $image->store('gallery_items', 'public');
+
+                    // استخراج الطول والعرض للصورة
+                    $imageSize = getimagesize($image);
+                    $width = $imageSize[0];
+                    $height = $imageSize[1];
+
+                    // حفظ الصورة في جدول media
+                    $media = Media::create([
+                        'path' => $imagePath,
+                        'type' => 'image',
+                        'mime_type' => $image->getClientMimeType(),
+                        'width' => $width,
+                        'height' => $height,
+                        'size_bytes' => $image->getSize(),
+                        'alt_text' => $data['alt_text'] ?? '',
+                        'title' => $data['image_title'] ?? '',
+                    ]);
+
+                    // إضافة الـ media_id للصورة الجديدة
+                    $data['image_media_id'] = $media->id;
+                }
+
+                // تحديث الـ gallery item (دون حذف أي شيء آخر)
+                $galleryItem->update($data);
+
+                // بعد اكتمال التحديث، حذف الصورة القديمة
+                if ($image && $galleryItem->image) {
+                    // حذف الصورة القديمة من التخزين المحلي
                     Storage::disk('public')->delete($galleryItem->image->path);
+                    // حذف الصورة من جدول media
                     $galleryItem->image->delete();
                 }
 
-                // حفظ الصورة الجديدة في المجلد
-                $imagePath = $image->store('gallery_items', 'public');
-
-                // حفظ الصورة في جدول media
-                $media = Media::create([
-                    'path' => $imagePath,
-                    'type' => 'image',
-                    'mime_type' => $image->getClientMimeType(),
-                    'width' => getimagesize($image)[0],
-                    'height' => getimagesize($image)[1],
-                    'size_bytes' => $image->getSize(),
-                    'alt_text' => $data['alt_text'],
-                    'title' => $data['image_title'],
-                ]);
-
-                // إضافة الـ media_id للصورة في البيانات
-                $data['image_media_id'] = $media->id;
-            }
-
-            // تحديث العنصر
-            $galleryItem->update($data);
-
-            return $galleryItem;
+                return $galleryItem;
+            });
         } catch (Throwable $e) {
             throw new \Exception('Error updating gallery item: ' . $e->getMessage());
         }

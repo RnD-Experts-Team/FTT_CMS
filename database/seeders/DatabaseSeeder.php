@@ -24,17 +24,17 @@ class DatabaseSeeder extends Seeder
         // 'email' => 'admin@example.com',
         // 'password' => Hash::make('password123'),
         // ]);
-        //$this->call(BenefitsSectionSeeder::class);
-        //$this->call(NeedsSectionSeeder::class);
-        //$this->call(FooterContactSeeder::class);
-        //$this->call(FooterSocialLinkSeeder::class);
-        //$this->call(HeroSectionSeeder::class);
-        //$this->call(FounderSectionWithMediaSeeder::class);
-        //  $this->call(TestimonialsSectionsSeeder::class);
-        //  $this->call(TemptationSectionSeeder::class);
+        // $this->call(BenefitsSectionSeeder::class);
+        // $this->call(NeedsSectionSeeder::class);
+        // $this->call(FooterContactSeeder::class);
+        // $this->call(FooterSocialLinkSeeder::class);
+        // $this->call(HeroSectionSeeder::class);
+        // $this->call(FounderSectionWithMediaSeeder::class);
+        // $this->call(TestimonialsSectionsSeeder::class);
+        // $this->call(TemptationSectionSeeder::class);
         // $this->call(OfferSectionSeeder::class);
-         $this->call(SiteMetadataSeeder::class);
-         $this->call(GallerySectionSeeder::class);
+        // $this->call(SiteMetadataSeeder::class);
+        // $this->call(GallerySectionSeeder::class);
 
     }
 }
