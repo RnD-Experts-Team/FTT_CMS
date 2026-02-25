@@ -31,7 +31,7 @@ class TemptationRequirementService
     public function index(): Collection
     {
         try {
-            return TemptationRequirement::all();
+            return TemptationRequirement::orderBy('sort_order')->get();
         } catch (Throwable $e) {
             throw new \Exception('Error fetching temptation requirements: ' . $e->getMessage());
         }
