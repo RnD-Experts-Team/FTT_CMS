@@ -21,6 +21,7 @@ Route::middleware('api')->group(function () {
     require __DIR__.'/api/hero-sections.php';
     require __DIR__.'/api/founder-sections.php';
     require __DIR__.'/api/testimonials-sections.php';
+    require __DIR__.'/api/testimonial.php';
     require __DIR__.'/api/temptationsection.php';    
     require __DIR__.'/api/temptationrequirement.php';    
     require __DIR__.'/api/whyusitem.php';    
