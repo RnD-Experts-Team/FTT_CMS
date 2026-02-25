@@ -5,8 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\FooterContact;
 use App\Services\FooterContactService;
-use App\Http\Requests\FooterContactIndexRequest;
-use App\Http\Requests\FooterContactUpdateRequest;
+ use App\Http\Requests\FooterContactUpdateRequest;
 use Illuminate\Http\JsonResponse;
 use Throwable;
 

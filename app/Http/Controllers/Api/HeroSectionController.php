@@ -5,8 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\HeroSection;
 use App\Services\HeroSectionService;
-use App\Http\Requests\HeroSectionIndexRequest;
-use App\Http\Requests\HeroSectionUpdateRequest;
+ use App\Http\Requests\HeroSectionUpdateRequest;
 use Illuminate\Http\JsonResponse;
 use Throwable;
 

@@ -16,7 +16,7 @@ class StoreOfferRequirementRequest extends FormRequest
         return [
             'offer_section_id' => 'required|exists:offer_sections,id',
             'text' => 'required|string|max:1024',
-            'sort_order' => 'integer|min:0', // قيمة sort_order يجب أن تكون رقمية
+            'sort_order' => 'integer|min:0',  
         ];
     }
 }

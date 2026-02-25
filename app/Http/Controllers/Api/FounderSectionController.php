@@ -5,8 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\FounderSection;
 use App\Services\FounderSectionService;
-use App\Http\Requests\FounderSectionIndexRequest;
-use App\Http\Requests\FounderSectionUpdateRequest;
+ use App\Http\Requests\FounderSectionUpdateRequest;
 use Illuminate\Http\JsonResponse;
 use Throwable;
 

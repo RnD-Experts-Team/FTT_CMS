@@ -9,8 +9,7 @@ use Throwable;
 use Illuminate\Support\Facades\DB;
  class GalleryItemService
 {
-    // دالة لإنشاء GalleryItem جديد
-    public function store(array $data, $image): GalleryItem
+     public function store(array $data, $image): GalleryItem
     {
         try {
             // التحقق من فريدية sort_order
@@ -56,14 +55,12 @@ use Illuminate\Support\Facades\DB;
         }
     }
 
-    // دالة لعرض جميع العناصر
-    public function index()
+     public function index()
     {
         return GalleryItem::with('image')->orderBy('sort_order')->get();
     }
 
-    // دالة لعرض العنصر بناءً على الـ ID
-    public function show(int $id): ?GalleryItem
+     public function show(int $id): ?GalleryItem
     {
         return GalleryItem::with('image')->find($id);
     }
@@ -73,10 +70,8 @@ use Illuminate\Support\Facades\DB;
     public function update(int $id, array $data, $image = null): GalleryItem
     {
         try {
-            // بدء المعاملة لضمان الأمان
-            return DB::transaction(function () use ($id, $data, $image) {
-                // البحث عن العنصر بناءً على الـ ID
-                $galleryItem = GalleryItem::with('image')->find($id);
+             return DB::transaction(function () use ($id, $data, $image) {
+                 $galleryItem = GalleryItem::with('image')->find($id);
                 if (!$galleryItem) {
                     throw new \Exception('Gallery item not found.');
                 }
@@ -94,8 +89,7 @@ use Illuminate\Support\Facades\DB;
                     $data['sort_order'] = $so;
                 }
 
-                // حفظ الصورة الجديدة إذا كانت موجودة
-                if ($image) {
+                 if ($image) {
                     // تخزين الصورة الجديدة في المجلد
                     $imagePath = $image->store('gallery_items', 'public');
 
