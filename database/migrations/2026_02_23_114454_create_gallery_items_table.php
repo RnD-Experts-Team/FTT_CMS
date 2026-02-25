@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('image_media_id')
                 ->constrained('media')
                 ->cascadeOnUpdate()
-                ->restrictOnDelete();
+                ->cascadeOnDelete();
             $table->string('title', 255);
             $table->text('description');
             $table->integer('sort_order')->default(0);
