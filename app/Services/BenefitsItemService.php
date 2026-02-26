@@ -28,31 +28,13 @@ class BenefitsItemService
 
     public function create(array $data)
     {
-          // Check if the sort_order is already in use
-        $existingItem = BenefitsItem::where('sort_order', $data['sort_order'])->first();
-        
-        // If the sort_order already exists, increment it until it's unique
-        if ($existingItem) {
-            do {
-                $data['sort_order'] += 1;
-                $existingItem = BenefitsItem::where('sort_order', $data['sort_order'])->first();
-            } while ($existingItem);
-        }
+        $this->ensureUniqueSortOrder($data);
         return BenefitsItem::create($data);
     }
 
     public function update(BenefitsItem $item, array $data)
     {
-         // Check if the sort_order is already in use
-        $existingItem = BenefitsItem::where('sort_order', $data['sort_order'])->first();
-        
-        // If the sort_order already exists, increment it until it's unique
-        if ($existingItem) {
-            do {
-                $data['sort_order'] += 1;
-                $existingItem = BenefitsItem::where('sort_order', $data['sort_order'])->first();
-            } while ($existingItem);
-        }
+        $this->ensureUniqueSortOrder($data);
         $item->update($data);
         return $item->refresh();
     }
@@ -60,5 +42,18 @@ class BenefitsItemService
     public function delete(BenefitsItem $item)
     {
         $item->delete();
+    }
+    private function ensureUniqueSortOrder(array &$data)
+    {
+        // Check if the sort_order is already in use
+        $existingItem = BenefitsItem::where('sort_order', $data['sort_order'])->first();
+        
+        // If the sort_order already exists, increment it until it's unique
+        if ($existingItem) {
+            do {
+                $data['sort_order'] += 1;
+                $existingItem = BenefitsItem::where('sort_order', $data['sort_order'])->first();
+            } while ($existingItem);
+        }
     }
 }

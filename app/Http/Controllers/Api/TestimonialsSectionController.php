@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUpdateTestimonialsSectionRequest;
 use App\Services\TestimonialsSectionService;
 use Illuminate\Http\JsonResponse;
-use Exception;
 use Throwable;
 
 class TestimonialsSectionController extends Controller

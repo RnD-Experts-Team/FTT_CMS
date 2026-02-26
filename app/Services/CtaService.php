@@ -28,7 +28,6 @@ class CtaService
             });
         }
 
-        // ترتيب افتراضي ثابت ومفيد
         $query->orderBy($sortBy, $sortDir)->orderBy('id', 'desc');
 
         return $query->paginate($perPage);
@@ -36,31 +35,13 @@ class CtaService
 
     public function create(array $data): Cta
     {
-          // Check if the sort_order is already in use
-        $existingItem = Cta::where('sort_order', $data['sort_order'])->first();
-        
-        // If the sort_order already exists, increment it until it's unique
-        if ($existingItem) {
-            do {
-                $data['sort_order'] += 1;
-                $existingItem = Cta::where('sort_order', $data['sort_order'])->first();
-            } while ($existingItem);
-        }
+        $this->ensureUniqueSortOrder($data);
         return Cta::create($data);
     }
 
     public function update(Cta $cta, array $data): Cta
     {
-          // Check if the sort_order is already in use
-        $existingItem = Cta::where('sort_order', $data['sort_order'])->first();
-        
-        // If the sort_order already exists, increment it until it's unique
-        if ($existingItem) {
-            do {
-                $data['sort_order'] += 1;
-                $existingItem = Cta::where('sort_order', $data['sort_order'])->first();
-            } while ($existingItem);
-        }
+        $this->ensureUniqueSortOrder($data);
         $cta->fill($data);
         $cta->save();
 
@@ -70,5 +51,18 @@ class CtaService
     public function delete(Cta $cta): void
     {
         $cta->delete();
+    }
+     private function ensureUniqueSortOrder(array &$data)
+    {
+        // Check if the sort_order is already in use
+        $existingItem = Cta::where('sort_order', $data['sort_order'])->first();
+        
+        // If the sort_order already exists, increment it until it's unique
+        if ($existingItem) {
+            do {
+                $data['sort_order'] += 1;
+                $existingItem = Cta::where('sort_order', $data['sort_order'])->first();
+            } while ($existingItem);
+        }
     }
 }

@@ -24,7 +24,7 @@ class BenefitsSectionController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Benefits sections fetched successfully',
-                'data' => $data, // مباشرة collection
+                'data' => $data,  
                 'meta' => []
             ]);
         } catch (Throwable $e) {
