@@ -1,0 +1,5547 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Task System API",
+    "description": "API for managing workspaces and users within workspaces.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://yourdomain.com/api"
+    }
+  ],
+  "paths": {
+   
+   "/login": {
+      "post": {
+        "summary": "User Login",
+        "operationId": "userLogin",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "User's email address."
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "User's password."
+                  }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string",
+                      "description": "JWT Bearer Token."
+                    },
+                    "token_type": {
+                      "type": "string",
+                      "description": "Token type (e.g., bearer)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid credentials or missing data."
+          },
+          "401": {
+            "description": "Unauthorized. Invalid login attempt."
+          }
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "summary": "User Logout",
+        "operationId": "userLogout",
+        "tags": ["Authentication"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logout successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Logout confirmation message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Invalid or expired token."
+          }
+        }
+      }
+    },
+  "/benefits-sections": {
+      "get": {
+        "summary": "Get a list of benefits sections",
+        "operationId": "getBenefitsSections",
+        "tags": ["Benefits Sections"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Search query for filtering the benefits sections by title or hook",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of benefits sections fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Benefits sections fetched successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "title": {
+                            "type": "string",
+                            "example": "Benefit Section Title"
+                          },
+                          "hook": {
+                            "type": "string",
+                            "example": "Benefit Section Hook"
+                          }
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch benefits sections."
+          }
+        }
+      }
+    },
+    "/benefits-sections/{benefitsSection}": {
+      "post": {
+        "summary": "Update a benefits section",
+        "operationId": "updateBenefitsSection",
+        "tags": ["Benefits Sections"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "benefitsSection",
+            "in": "path",
+            "required": true,
+            "description": "ID of the benefits section to update",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Title of the benefits section",
+                    "example": "Updated Benefits Section Title"
+                  },
+                  "hook": {
+                    "type": "string",
+                    "description": "Hook for the benefits section",
+                    "example": "Updated Benefits Section Hook"
+                  }
+                },
+                "required": ["title", "hook"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Benefits section updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Benefits section updated successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "title": {
+                          "type": "string",
+                          "example": "Updated Benefits Section Title"
+                        },
+                        "hook": {
+                          "type": "string",
+                          "example": "Updated Benefits Section Hook"
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "404": {
+            "description": "Benefits section not found."
+          },
+          "500": {
+            "description": "Internal server error. Failed to update benefits section."
+          }
+        }
+      }
+    },
+ "/benefits-items": {
+      "get": {
+        "summary": "Get a list of benefits items",
+        "operationId": "getBenefitsItems",
+        "tags": ["Benefits Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "benefits_section_id",
+            "in": "query",
+            "required": false,
+            "description": "Filter by benefits section ID",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Search query for filtering benefits items by text",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of benefits items fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Benefits items fetched successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "benefits_section_id": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "text": {
+                            "type": "string",
+                            "example": "Example text for benefit item"
+                          },
+                          "sort_order": {
+                            "type": "integer",
+                            "example": 1
+                          }
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch benefits items."
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new benefits item",
+        "operationId": "createBenefitsItem",
+        "tags": ["Benefits Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "benefits_section_id": {
+                    "type": "integer",
+                    "description": "The section to which the item belongs.",
+                    "example": 1
+                  },
+                  "text": {
+                    "type": "string",
+                    "description": "The text content for the benefits item.",
+                    "example": "Sample benefits item text"
+                  },
+                  "sort_order": {
+                    "type": "integer",
+                    "description": "The sort order of the benefits item.",
+                    "example": 1
+                  }
+                },
+                "required": ["benefits_section_id", "text", "sort_order"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Benefits item created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Benefits item created successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "benefits_section_id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "text": {
+                          "type": "string",
+                          "example": "Sample benefits item text"
+                        },
+                        "sort_order": {
+                          "type": "integer",
+                          "example": 1
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to create benefits item."
+          }
+        }
+      }
+    },
+    "/benefits-items/{benefitsItem}": {
+      "get": {
+        "summary": "Get a benefits item by ID",
+        "operationId": "getBenefitsItem",
+        "tags": ["Benefits Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "benefitsItem",
+            "in": "path",
+            "required": true,
+            "description": "ID of the benefits item to retrieve",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Benefits item fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Benefits item fetched successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "benefits_section_id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "text": {
+                          "type": "string",
+                          "example": "Sample benefits item text"
+                        },
+                        "sort_order": {
+                          "type": "integer",
+                          "example": 1
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch benefits item."
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a benefits item",
+        "operationId": "updateBenefitsItem",
+        "tags": ["Benefits Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "benefitsItem",
+            "in": "path",
+            "required": true,
+            "description": "ID of the benefits item to update",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "benefits_section_id": {
+                    "type": "integer",
+                    "description": "The section to which the item belongs.",
+                    "example": 1
+                  },
+                  "text": {
+                    "type": "string",
+                    "description": "The text content for the benefits item.",
+                    "example": "Updated benefits item text"
+                  },
+                  "sort_order": {
+                    "type": "integer",
+                    "description": "The sort order of the benefits item.",
+                    "example": 1
+                  }
+                },
+                "required": ["benefits_section_id", "text", "sort_order"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Benefits item updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Benefits item updated successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "benefits_section_id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "text": {
+                          "type": "string",
+                          "example": "Updated benefits item text"
+                        },
+                        "sort_order": {
+                          "type": "integer",
+                          "example": 1
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "404": {
+            "description": "Benefits item not found."
+          },
+          "500": {
+            "description": "Internal server error. Failed to update benefits item."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a benefits item",
+        "operationId": "deleteBenefitsItem",
+        "tags": ["Benefits Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "benefitsItem",
+            "in": "path",
+            "required": true,
+            "description": "ID of the benefits item to delete",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Benefits item deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Benefits item deleted successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {}
+                    },
+                    "meta": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to delete benefits item."
+          }
+        }
+      }
+    },
+     "/ctas": {
+      "get": {
+        "summary": "Get a list of CTAs",
+        "operationId": "getCtas",
+        "tags": ["CTAs"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "is_active",
+            "in": "query",
+            "required": false,
+            "description": "Filter by CTA active status",
+            "schema": {
+              "type": "integer",
+              "enum": [0, 1]
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Search query for filtering CTAs by title or description",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "description": "Sort by field",
+            "schema": {
+              "type": "string",
+              "enum": ["id", "sort_order", "title", "created_at", "updated_at"]
+            }
+          },
+          {
+            "name": "sort_dir",
+            "in": "query",
+            "required": false,
+            "description": "Sort direction",
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"]
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": false,
+            "description": "Items per page for pagination",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CTAs fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "CTAs fetched successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "title": {
+                            "type": "string",
+                            "example": "Sample CTA title"
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "CTA description here"
+                          },
+                          "button1_text": {
+                            "type": "string",
+                            "example": "Click Here"
+                          },
+                          "button1_link": {
+                            "type": "string",
+                            "example": "https://example.com"
+                          },
+                          "button2_text": {
+                            "type": "string",
+                            "example": "Learn More"
+                          },
+                          "button2_link": {
+                            "type": "string",
+                            "example": "https://example.com/more"
+                          },
+                          "sort_order": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "is_active": {
+                            "type": "integer",
+                            "example": 1
+                          }
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "current_page": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "per_page": {
+                              "type": "integer",
+                              "example": 15
+                            },
+                            "total": {
+                              "type": "integer",
+                              "example": 30
+                            },
+                            "last_page": {
+                              "type": "integer",
+                              "example": 2
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch CTAs."
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new CTA",
+        "operationId": "createCta",
+        "tags": ["CTAs"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "CTA title",
+                    "example": "Sample CTA title"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "CTA description",
+                    "example": "CTA description here"
+                  },
+                  "button1_text": {
+                    "type": "string",
+                    "description": "Text for the first CTA button",
+                    "example": "Click Here"
+                  },
+                  "button1_link": {
+                    "type": "string",
+                    "description": "Link for the first CTA button",
+                    "example": "https://example.com"
+                  },
+                  "button2_text": {
+                    "type": "string",
+                    "description": "Text for the second CTA button",
+                    "example": "Learn More"
+                  },
+                  "button2_link": {
+                    "type": "string",
+                    "description": "Link for the second CTA button",
+                    "example": "https://example.com/more"
+                  },
+                  "sort_order": {
+                    "type": "integer",
+                    "description": "Sort order for the CTA",
+                    "example": 1
+                  },
+                  "is_active": {
+                    "type": "integer",
+                    "description": "CTA status (0 = inactive, 1 = active)",
+                    "example": 1
+                  }
+                },
+                "required": ["title", "description", "button1_text", "button1_link", "button2_text", "button2_link"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "CTA created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "CTA created successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "title": {
+                          "type": "string",
+                          "example": "Sample CTA title"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "CTA description here"
+                        },
+                        "button1_text": {
+                          "type": "string",
+                          "example": "Click Here"
+                        },
+                        "button1_link": {
+                          "type": "string",
+                          "example": "https://example.com"
+                        },
+                        "button2_text": {
+                          "type": "string",
+                          "example": "Learn More"
+                        },
+                        "button2_link": {
+                          "type": "string",
+                          "example": "https://example.com/more"
+                        },
+                        "sort_order": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "is_active": {
+                          "type": "integer",
+                          "example": 1
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to create CTA."
+          }
+        }
+      }
+    },
+    "/ctas/{cta}": {
+      "get": {
+        "summary": "Get a CTA by ID",
+        "operationId": "getCta",
+        "tags": ["CTAs"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cta",
+            "in": "path",
+            "required": true,
+            "description": "ID of the CTA to retrieve",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CTA fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "CTA fetched successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "title": {
+                          "type": "string",
+                          "example": "Sample CTA title"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "CTA description here"
+                        },
+                        "button1_text": {
+                          "type": "string",
+                          "example": "Click Here"
+                        },
+                        "button1_link": {
+                          "type": "string",
+                          "example": "https://example.com"
+                        },
+                        "button2_text": {
+                          "type": "string",
+                          "example": "Learn More"
+                        },
+                        "button2_link": {
+                          "type": "string",
+                          "example": "https://example.com/more"
+                        },
+                        "sort_order": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "is_active": {
+                          "type": "integer",
+                          "example": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch CTA."
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a CTA",
+        "operationId": "updateCta",
+        "tags": ["CTAs"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cta",
+            "in": "path",
+            "required": true,
+            "description": "ID of the CTA to update",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "CTA title",
+                    "example": "Updated CTA title"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "CTA description",
+                    "example": "Updated CTA description"
+                  },
+                  "button1_text": {
+                    "type": "string",
+                    "description": "Text for the first CTA button",
+                    "example": "Updated Click Here"
+                  },
+                  "button1_link": {
+                    "type": "string",
+                    "description": "Link for the first CTA button",
+                    "example": "https://updated-example.com"
+                  },
+                  "button2_text": {
+                    "type": "string",
+                    "description": "Text for the second CTA button",
+                    "example": "Updated Learn More"
+                  },
+                  "button2_link": {
+                    "type": "string",
+                    "description": "Link for the second CTA button",
+                    "example": "https://updated-example.com/more"
+                  },
+                  "sort_order": {
+                    "type": "integer",
+                    "description": "Sort order for the CTA",
+                    "example": 1
+                  },
+                  "is_active": {
+                    "type": "integer",
+                    "description": "CTA status (0 = inactive, 1 = active)",
+                    "example": 1
+                  }
+                },
+                "required": ["title", "description", "button1_text", "button1_link", "button2_text", "button2_link"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "CTA updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "CTA updated successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "title": {
+                          "type": "string",
+                          "example": "Updated CTA title"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Updated CTA description"
+                        },
+                        "button1_text": {
+                          "type": "string",
+                          "example": "Updated Click Here"
+                        },
+                        "button1_link": {
+                          "type": "string",
+                          "example": "https://updated-example.com"
+                        },
+                        "button2_text": {
+                          "type": "string",
+                          "example": "Updated Learn More"
+                        },
+                        "button2_link": {
+                          "type": "string",
+                          "example": "https://updated-example.com/more"
+                        },
+                        "sort_order": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "is_active": {
+                          "type": "integer",
+                          "example": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "404": {
+            "description": "CTA not found."
+          },
+          "500": {
+            "description": "Internal server error. Failed to update CTA."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a CTA",
+        "operationId": "deleteCta",
+        "tags": ["CTAs"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cta",
+            "in": "path",
+            "required": true,
+            "description": "ID of the CTA to delete",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CTA deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "CTA deleted successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {}
+                    },
+                    "meta": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to delete CTA."
+          }
+        }
+      }
+    },
+    "/footer-contacts": {
+      "get": {
+        "summary": "Get footer contact information",
+        "operationId": "getFooterContacts",
+        "tags": ["Footer Contacts"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Footer contacts fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Footer contacts fetched successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "phone": {
+                            "type": "string",
+                            "example": "123-456-7890"
+                          },
+                          "whatsapp": {
+                            "type": "string",
+                            "example": "123-456-7890"
+                          },
+                          "email": {
+                            "type": "string",
+                            "example": "contact@yourdomain.com"
+                          },
+                          "address": {
+                            "type": "string",
+                            "example": "123 Example St, City, Country"
+                          }
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch footer contacts."
+          }
+        }
+      }
+    },
+    "/footer-contacts/{footerContact}": {
+      "post": {
+        "summary": "Update footer contact information",
+        "operationId": "updateFooterContact",
+        "tags": ["Footer Contacts"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "footerContact",
+            "in": "path",
+            "required": true,
+            "description": "ID of the footer contact to update",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phone": {
+                    "type": "string",
+                    "description": "Phone number",
+                    "example": "123-456-7890"
+                  },
+                  "whatsapp": {
+                    "type": "string",
+                    "description": "WhatsApp number",
+                    "example": "123-456-7890"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Email address",
+                    "example": "contact@yourdomain.com"
+                  },
+                  "address": {
+                    "type": "string",
+                    "description": "Physical address",
+                    "example": "123 Example St, City, Country"
+                  }
+                },
+                "required": ["phone", "whatsapp", "email", "address"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Footer contact updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Footer contact updated successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "phone": {
+                          "type": "string",
+                          "example": "123-456-7890"
+                        },
+                        "whatsapp": {
+                          "type": "string",
+                          "example": "123-456-7890"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "contact@yourdomain.com"
+                        },
+                        "address": {
+                          "type": "string",
+                          "example": "123 Example St, City, Country"
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "404": {
+            "description": "Footer contact not found."
+          },
+          "500": {
+            "description": "Internal server error. Failed to update footer contact."
+          }
+        }
+      }
+    },
+     "/footer-social-links": {
+      "get": {
+        "summary": "Get a list of footer social links",
+        "operationId": "getFooterSocialLinks",
+        "tags": ["Footer Social Links"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "is_active",
+            "in": "query",
+            "required": false,
+            "description": "Filter by active status",
+            "schema": {
+              "type": "integer",
+              "enum": [0, 1]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Footer social links fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Footer social links fetched successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "platform": {
+                            "type": "string",
+                            "example": "facebook"
+                          },
+                          "url": {
+                            "type": "string",
+                            "example": "https://facebook.com"
+                          },
+                          "sort_order": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "is_active": {
+                            "type": "integer",
+                            "example": 1
+                          }
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch footer social links."
+          }
+        }
+      }
+    },
+    "/footer-social-links/{footerSocialLink}": {
+      "post": {
+        "summary": "Update a footer social link",
+        "operationId": "updateFooterSocialLink",
+        "tags": ["Footer Social Links"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "footerSocialLink",
+            "in": "path",
+            "required": true,
+            "description": "ID of the footer social link to update",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "platform": {
+                    "type": "string",
+                    "description": "Social media platform",
+                    "example": "facebook"
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "URL of the social link",
+                    "example": "https://facebook.com"
+                  },
+                  "sort_order": {
+                    "type": "integer",
+                    "description": "Sort order of the footer social link",
+                    "example": 1
+                  },
+                  "is_active": {
+                    "type": "integer",
+                    "description": "Status of the link (0 = inactive, 1 = active)",
+                    "example": 1
+                  }
+                },
+                "required": ["platform", "url", "sort_order", "is_active"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Footer social link updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Footer social link updated successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "platform": {
+                          "type": "string",
+                          "example": "facebook"
+                        },
+                        "url": {
+                          "type": "string",
+                          "example": "https://facebook.com"
+                        },
+                        "sort_order": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "is_active": {
+                          "type": "integer",
+                          "example": 1
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "404": {
+            "description": "Footer social link not found."
+          },
+          "500": {
+            "description": "Internal server error. Failed to update footer social link."
+          }
+        }
+      }
+    }, "/founder-sections": {
+      "get": {
+        "summary": "Get the founder section information",
+        "operationId": "getFounderSections",
+        "tags": ["Founder Sections"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Founder section fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Founder section fetched successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "hook_text": {
+                            "type": "string",
+                            "example": "Hook Text Example"
+                          },
+                          "title": {
+                            "type": "string",
+                            "example": "Founder Title"
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Founder section description here."
+                          },
+                          "video": {
+                            "type": "object",
+                            "properties": {
+                              "path": {
+                                "type": "string",
+                                "example": "uploads/videos/founder_video.mp4"
+                              },
+                              "alt_text": {
+                                "type": "string",
+                                "example": "Founder video"
+                              },
+                              "title": {
+                                "type": "string",
+                                "example": "Founder Video"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch founder section."
+          }
+        }
+      }
+    },
+    "/founder-sections/{founderSection}": {
+      "post": {
+        "summary": "Update founder section information",
+        "operationId": "updateFounderSection",
+        "tags": ["Founder Sections"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "founderSection",
+            "in": "path",
+            "required": true,
+            "description": "ID of the founder section to update",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "hook_text": {
+                    "type": "string",
+                    "description": "Hook text for the section",
+                    "example": "Updated hook text"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "Title of the section",
+                    "example": "Updated title"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of the section",
+                    "example": "Updated description"
+                  },
+                  "video": {
+                    "type": "string",
+                    "description": "Video file (mp4, mov, avi)",
+                    "example": "founder_video.mp4"
+                  },
+                  "alt_text": {
+                    "type": "string",
+                    "description": "Alternative text for the video",
+                    "example": "Updated alt text"
+                  },
+                  "title_video": {
+                    "type": "string",
+                    "description": "Title for the video",
+                    "example": "Updated video title"
+                  }
+                },
+                "required": ["hook_text", "title", "description", "video"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Founder section updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Founder section updated successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "hook_text": {
+                          "type": "string",
+                          "example": "Updated hook text"
+                        },
+                        "title": {
+                          "type": "string",
+                          "example": "Updated title"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Updated description"
+                        },
+                        "video": {
+                          "type": "object",
+                          "properties": {
+                            "path": {
+                              "type": "string",
+                              "example": "uploads/videos/founder_video.mp4"
+                            },
+                            "alt_text": {
+                              "type": "string",
+                              "example": "Updated alt text"
+                            },
+                            "title": {
+                              "type": "string",
+                              "example": "Updated video title"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "404": {
+            "description": "Founder section not found."
+          },
+          "500": {
+            "description": "Internal server error. Failed to update founder section."
+          }
+        }
+      }
+    }, "/gallery-sections": {
+      "get": {
+        "summary": "Get all gallery sections",
+        "operationId": "getGallerySections",
+        "tags": ["Gallery Sections"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gallery sections fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Gallery sections fetched successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "gallery_section": {
+                            "type": "object",
+                            "properties": {
+                              "hook": {
+                                "type": "string",
+                                "example": "Founder Section"
+                              },
+                              "title": {
+                                "type": "string",
+                                "example": "Founder"
+                              },
+                              "description": {
+                                "type": "string",
+                                "example": "This is the founder section description."
+                              },
+                              "images": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "integer",
+                                      "example": 1
+                                    },
+                                    "image_url": {
+                                      "type": "string",
+                                      "example": "/uploads/images/founder_image.jpg"
+                                    },
+                                    "title": {
+                                      "type": "string",
+                                      "example": "Founder Image"
+                                    },
+                                    "description": {
+                                      "type": "string",
+                                      "example": "This is the image description."
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch gallery sections."
+          }
+        }
+      }
+    },
+    "/gallery-sections/{id}": {
+      "post": {
+        "summary": "Update a gallery section",
+        "operationId": "updateGallerySection",
+        "tags": ["Gallery Sections"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the gallery section to update",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "hook": {
+                    "type": "string",
+                    "example": "Updated Hook Text"
+                  },
+                  "title": {
+                    "type": "string",
+                    "example": "Updated Title"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Updated description of the gallery section"
+                  }
+                },
+                "required": ["hook", "title", "description"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gallery section updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Gallery section updated successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "hook": {
+                          "type": "string",
+                          "example": "Updated Hook Text"
+                        },
+                        "title": {
+                          "type": "string",
+                          "example": "Updated Title"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Updated description of the gallery section"
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "404": {
+            "description": "Gallery section not found."
+          },
+          "500": {
+            "description": "Internal server error. Failed to update gallery section."
+          }
+        }
+      }
+    }, "/gallery-items": {
+      "get": {
+        "summary": "Get all gallery items",
+        "operationId": "getGalleryItems",
+        "tags": ["Gallery Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gallery items fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Gallery items fetched successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "title": {
+                            "type": "string",
+                            "example": "Sample Gallery Item"
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "This is a sample gallery item description"
+                          },
+                          "image": {
+                            "type": "object",
+                            "properties": {
+                              "image_url": {
+                                "type": "string",
+                                "example": "/uploads/gallery_items/sample_image.jpg"
+                              },
+                              "title": {
+                                "type": "string",
+                                "example": "Sample Image Title"
+                              },
+                              "description": {
+                                "type": "string",
+                                "example": "Sample image description"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch gallery items."
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new gallery item",
+        "operationId": "createGalleryItem",
+        "tags": ["Gallery Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "gallery_section_id": {
+                    "type": "integer",
+                    "description": "The ID of the gallery section the item belongs to.",
+                    "example": 1
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "Title of the gallery item",
+                    "example": "New Gallery Item"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of the gallery item",
+                    "example": "Description of the gallery item"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Image file for the gallery item"
+                  },
+                  "alt_text": {
+                    "type": "string",
+                    "description": "Alternative text for the image",
+                    "example": "Alternative text"
+                  },
+                  "image_title": {
+                    "type": "string",
+                    "description": "Title for the image",
+                    "example": "Image Title"
+                  },
+                  "sort_order": {
+                    "type": "integer",
+                    "description": "Sort order for the item in the gallery",
+                    "example": 1
+                  }
+                },
+                "required": ["gallery_section_id", "title", "description", "image", "alt_text", "image_title"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Gallery item created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Gallery item created successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "title": {
+                          "type": "string",
+                          "example": "New Gallery Item"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Description of the gallery item"
+                        },
+                        "image": {
+                          "type": "object",
+                          "properties": {
+                            "image_url": {
+                              "type": "string",
+                              "example": "/uploads/gallery_items/sample_image.jpg"
+                            },
+                            "title": {
+                              "type": "string",
+                              "example": "Sample Image Title"
+                            },
+                            "description": {
+                              "type": "string",
+                              "example": "Sample image description"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to create gallery item."
+          }
+        }
+      }
+    },
+    "/gallery-items/{id}": {
+      "get": {
+        "summary": "Get a gallery item by ID",
+        "operationId": "getGalleryItemById",
+        "tags": ["Gallery Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the gallery item to retrieve",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gallery item fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Gallery item fetched successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "title": {
+                          "type": "string",
+                          "example": "New Gallery Item"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Description of the gallery item"
+                        },
+                        "image": {
+                          "type": "object",
+                          "properties": {
+                            "image_url": {
+                              "type": "string",
+                              "example": "/uploads/gallery_items/sample_image.jpg"
+                            },
+                            "title": {
+                              "type": "string",
+                              "example": "Sample Image Title"
+                            },
+                            "description": {
+                              "type": "string",
+                              "example": "Sample image description"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch gallery item."
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a gallery item by ID",
+        "operationId": "updateGalleryItemById",
+        "tags": ["Gallery Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the gallery item to update",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "Updated Gallery Item Title"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Updated description of the gallery item"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary",
+                    "example": "updated_image.jpg"
+                  },
+                  "alt_text": {
+                    "type": "string",
+                    "example": "Updated image alt text"
+                  },
+                  "image_title": {
+                    "type": "string",
+                    "example": "Updated image title"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gallery item updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Gallery item updated successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "title": {
+                          "type": "string",
+                          "example": "Updated Gallery Item Title"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Updated description of the gallery item"
+                        },
+                        "image": {
+                          "type": "object",
+                          "properties": {
+                            "image_url": {
+                              "type": "string",
+                              "example": "/uploads/gallery_items/updated_image.jpg"
+                            },
+                            "title": {
+                              "type": "string",
+                              "example": "Updated Image Title"
+                            },
+                            "description": {
+                              "type": "string",
+                              "example": "Updated image description"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "404": {
+            "description": "Gallery item not found."
+          },
+          "500": {
+            "description": "Internal server error. Failed to update gallery item."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a gallery item by ID",
+        "operationId": "deleteGalleryItemById",
+        "tags": ["Gallery Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the gallery item to delete",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gallery item deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Gallery item deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to delete gallery item."
+          }
+        }
+      }
+    },  "/gallery": {
+      "get": {
+        "summary": "Get all gallery sections with images",
+        "operationId": "getGallerySections",
+        "tags": ["Gallery"],
+        "responses": {
+          "200": {
+            "description": "Gallery sections retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Gallery section retrieved successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "gallery_section": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "hook": {
+                                "type": "string",
+                                "example": "Founder Hook"
+                              },
+                              "title": {
+                                "type": "string",
+                                "example": "Founder Section Title"
+                              },
+                              "description": {
+                                "type": "string",
+                                "example": "Description of the founder section"
+                              },
+                              "images": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "integer",
+                                      "example": 1
+                                    },
+                                    "image_url": {
+                                      "type": "string",
+                                      "example": "/uploads/images/founder_image.jpg"
+                                    },
+                                    "title": {
+                                      "type": "string",
+                                      "example": "Founder Image Title"
+                                    },
+                                    "description": {
+                                      "type": "string",
+                                      "example": "Image description"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch gallery sections."
+          }
+        }
+      }
+    }, "/hero_sections": {
+      "get": {
+        "summary": "Get all hero sections with media",
+        "operationId": "getHeroSections",
+        "tags": ["Hero Sections"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Hero sections fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Hero sections fetched successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "gallery_section": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "subheader": {
+                                "type": "string",
+                                "example": "Hero Subheader"
+                              },
+                              "title": {
+                                "type": "string",
+                                "example": "Hero Section Title"
+                              },
+                              "description_html": {
+                                "type": "string",
+                                "example": "HTML description"
+                              },
+                              "media": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "integer",
+                                      "example": 1
+                                    },
+                                    "url": {
+                                      "type": "string",
+                                      "example": "/uploads/hero/sample_image.jpg"
+                                    }
+                                  }
+                                }
+                              },
+                              "button1_text": {
+                                "type": "string",
+                                "example": "Learn More"
+                              },
+                              "button1_link": {
+                                "type": "string",
+                                "example": "https://example.com"
+                              },
+                              "button2_text": {
+                                "type": "string",
+                                "example": "Contact Us"
+                              },
+                              "button2_link": {
+                                "type": "string",
+                                "example": "https://example.com/contact"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch hero sections."
+          }
+        }
+      }
+    },
+    "/hero_sections/{heroSection}": {
+      "post": {
+        "summary": "Update a hero section",
+        "operationId": "updateHeroSection",
+        "tags": ["Hero Sections"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "heroSection",
+            "in": "path",
+            "required": true,
+            "description": "ID of the hero section to update",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "subheader": {
+                    "type": "string",
+                    "example": "Updated Hero Subheader"
+                  },
+                  "title": {
+                    "type": "string",
+                    "example": "Updated Hero Title"
+                  },
+                  "description_html": {
+                    "type": "string",
+                    "example": "Updated HTML description"
+                  },
+                  "media_files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary",
+                      "example": "image.jpg"
+                    },
+                    "description": "Media files (images/videos)"
+                  },
+                  "alt_text": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "example": "Media description"
+                    },
+                    "description": "Alternative text for the media files"
+                  },
+                  "title_text": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "example": "Media title"
+                    },
+                    "description": "Title for the media files"
+                  }
+                },
+                "required": ["subheader", "title", "description_html"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Hero section updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Hero section updated successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "subheader": {
+                          "type": "string",
+                          "example": "Updated Hero Subheader"
+                        },
+                        "title": {
+                          "type": "string",
+                          "example": "Updated Hero Title"
+                        },
+                        "description_html": {
+                          "type": "string",
+                          "example": "Updated HTML description"
+                        },
+                        "media": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer",
+                                "example": 1
+                              },
+                              "url": {
+                                "type": "string",
+                                "example": "/uploads/hero/updated_image.jpg"
+                              }
+                            }
+                          }
+                        },
+                        "button1_text": {
+                          "type": "string",
+                          "example": "Updated Learn More"
+                        },
+                        "button1_link": {
+                          "type": "string",
+                          "example": "https://example.com"
+                        },
+                        "button2_text": {
+                          "type": "string",
+                          "example": "Updated Contact Us"
+                        },
+                        "button2_link": {
+                          "type": "string",
+                          "example": "https://example.com/contact"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "404": {
+            "description": "Hero section not found."
+          },
+          "500": {
+            "description": "Internal server error. Failed to update hero section."
+          }
+        }
+      }
+    },"/home": {
+      "get": {
+        "summary": "Get home data excluding gallery section",
+        "operationId": "getHomeData",
+        "tags": ["Home"],
+        "responses": {
+          "200": {
+            "description": "Home data retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Home data retrieved successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "site_metadata": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "example": "My Website"
+                            },
+                            "description": {
+                              "type": "string",
+                              "example": "This is a website description."
+                            },
+                            "keywords": {
+                              "type": "string",
+                              "example": "website, business"
+                            },
+                            "logo": {
+                              "type": "string",
+                              "example": "/uploads/logos/logo.png"
+                            },
+                            "favicon": {
+                              "type": "string",
+                              "example": "/uploads/logos/favicon.ico"
+                            }
+                          }
+                        },
+                        "footer": {
+                          "type": "object",
+                          "properties": {
+                            "contact_info": {
+                              "type": "object",
+                              "properties": {
+                                "phone": {
+                                  "type": "string",
+                                  "example": "+123456789"
+                                },
+                                "whatsapp": {
+                                  "type": "string",
+                                  "example": "+123456789"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "example": "contact@website.com"
+                                },
+                                "address": {
+                                  "type": "string",
+                                  "example": "123 Street Name"
+                                }
+                              }
+                            },
+                            "social_links": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "platform": {
+                                    "type": "string",
+                                    "example": "facebook"
+                                  },
+                                  "url": {
+                                    "type": "string",
+                                    "example": "https://facebook.com/website"
+                                  },
+                                  "is_active": {
+                                    "type": "boolean",
+                                    "example": true
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "hero_section": {
+                          "type": "object",
+                          "properties": {
+                            "subheader": {
+                              "type": "string",
+                              "example": "Welcome to our website"
+                            },
+                            "title": {
+                              "type": "string",
+                              "example": "Hero Section Title"
+                            },
+                            "description_html": {
+                              "type": "string",
+                              "example": "<p>This is the hero section description.</p>"
+                            },
+                            "button1_text": {
+                              "type": "string",
+                              "example": "Learn More"
+                            },
+                            "button1_link": {
+                              "type": "string",
+                              "example": "https://website.com/learn-more"
+                            },
+                            "button2_text": {
+                              "type": "string",
+                              "example": "Contact Us"
+                            },
+                            "button2_link": {
+                              "type": "string",
+                              "example": "https://website.com/contact"
+                            },
+                            "media": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer",
+                                    "example": 1
+                                  },
+                                  "url": {
+                                    "type": "string",
+                                    "example": "/uploads/hero/sample_image.jpg"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "testimonials_section": {
+                          "type": "object",
+                          "properties": {
+                            "hook": {
+                              "type": "string",
+                              "example": "What our clients say"
+                            },
+                            "title": {
+                              "type": "string",
+                              "example": "Client Testimonials"
+                            },
+                            "description": {
+                              "type": "string",
+                              "example": "Read what our satisfied clients have to say."
+                            },
+                            "testimonials": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "video_media_id": {
+                                    "type": "integer",
+                                    "example": 1
+                                  },
+                                  "text": {
+                                    "type": "string",
+                                    "example": "This is a testimonial."
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "example": "John Doe"
+                                  },
+                                  "position": {
+                                    "type": "string",
+                                    "example": "CEO"
+                                  },
+                                  "duration_seconds": {
+                                    "type": "integer",
+                                    "example": 120
+                                  },
+                                  "sort_order": {
+                                    "type": "integer",
+                                    "example": 1
+                                  },
+                                  "is_active": {
+                                    "type": "boolean",
+                                    "example": true
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "ctas": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer",
+                                "example": 1
+                              },
+                              "title": {
+                                "type": "string",
+                                "example": "Get Started"
+                              },
+                              "description": {
+                                "type": "string",
+                                "example": "Take the first step to success."
+                              },
+                              "button1_text": {
+                                "type": "string",
+                                "example": "Sign Up"
+                              },
+                              "button1_link": {
+                                "type": "string",
+                                "example": "https://website.com/sign-up"
+                              },
+                              "button2_text": {
+                                "type": "string",
+                                "example": "Learn More"
+                              },
+                              "button2_link": {
+                                "type": "string",
+                                "example": "https://website.com/learn-more"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch home data."
+          }
+        }
+      }
+    }, "/needs-sections": {
+      "get": {
+        "summary": "Get all needs sections",
+        "operationId": "getNeedsSections",
+        "tags": ["Needs Sections"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Search query for title or hook",
+            "schema": {
+              "type": "string",
+              "example": "Example search term"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Needs sections fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Needs sections fetched successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "hook": {
+                            "type": "string",
+                            "example": "We need your help!"
+                          },
+                          "title": {
+                            "type": "string",
+                            "example": "Call for Volunteers"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch needs sections."
+          }
+        }
+      }
+    },
+    "/needs-sections/{needsSection}": {
+      "post": {
+        "summary": "Update a needs section",
+        "operationId": "updateNeedsSection",
+        "tags": ["Needs Sections"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "needsSection",
+            "in": "path",
+            "required": true,
+            "description": "ID of the needs section to update",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "hook": {
+                    "type": "string",
+                    "example": "Updated Call for Volunteers"
+                  },
+                  "title": {
+                    "type": "string",
+                    "example": "Updated Volunteers Needed"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Needs section updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Needs section updated successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "hook": {
+                          "type": "string",
+                          "example": "Updated Call for Volunteers"
+                        },
+                        "title": {
+                          "type": "string",
+                          "example": "Updated Volunteers Needed"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "404": {
+            "description": "Needs section not found."
+          },
+          "500": {
+            "description": "Internal server error. Failed to update needs section."
+          }
+        }
+      }
+    }, "/needs-items": {
+      "post": {
+        "summary": "Create a new needs item",
+        "operationId": "createNeedsItem",
+        "tags": ["Needs Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "needs_section_id": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "text": {
+                    "type": "string",
+                    "example": "We need volunteers for the event."
+                  },
+                  "sort_order": {
+                    "type": "integer",
+                    "example": 0
+                  }
+                },
+                "required": ["needs_section_id", "text"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Needs item created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Needs item created successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "needs_section_id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "text": {
+                          "type": "string",
+                          "example": "We need volunteers for the event."
+                        },
+                        "sort_order": {
+                          "type": "integer",
+                          "example": 0
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to create needs item."
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all needs items",
+        "operationId": "getNeedsItems",
+        "tags": ["Needs Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "needs_section_id",
+            "in": "query",
+            "required": false,
+            "description": "Filter by needs section ID",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Search query for text",
+            "schema": {
+              "type": "string",
+              "example": "Volunteer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Needs items fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Needs items fetched successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "needs_section_id": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "text": {
+                            "type": "string",
+                            "example": "We need volunteers for this project."
+                          },
+                          "sort_order": {
+                            "type": "integer",
+                            "example": 1
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch needs items."
+          }
+        }
+      }
+    },
+    "/needs-items/{needsItem}": {
+      
+      "get": {
+        "summary": "Get a specific needs item",
+        "operationId": "getNeedsItem",
+        "tags": ["Needs Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "needsItem",
+            "in": "path",
+            "required": true,
+            "description": "ID of the needs item to fetch",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Needs item fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Needs item fetched successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "needs_section_id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "text": {
+                          "type": "string",
+                          "example": "We need volunteers for this project."
+                        },
+                        "sort_order": {
+                          "type": "integer",
+                          "example": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "404": {
+            "description": "Needs item not found."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch needs item."
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a specific needs item",
+        "operationId": "updateNeedsItem",
+        "tags": ["Needs Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "needsItem",
+            "in": "path",
+            "required": true,
+            "description": "ID of the needs item to update",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "needs_section_id": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "text": {
+                    "type": "string",
+                    "example": "Updated text for needs item"
+                  },
+                  "sort_order": {
+                    "type": "integer",
+                    "example": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Needs item updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Needs item updated successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "needs_section_id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "text": {
+                          "type": "string",
+                          "example": "Updated text for needs item"
+                        },
+                        "sort_order": {
+                          "type": "integer",
+                          "example": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "404": {
+            "description": "Needs item not found."
+          },
+          "500": {
+            "description": "Internal server error. Failed to update needs item."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a specific needs item",
+        "operationId": "deleteNeedsItem",
+        "tags": ["Needs Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "needsItem",
+            "in": "path",
+            "required": true,
+            "description": "ID of the needs item to delete",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Needs item deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Needs item deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "404": {
+            "description": "Needs item not found."
+          },
+          "500": {
+            "description": "Internal server error. Failed to delete needs item."
+          }
+        }
+      }
+    }, "/offer-sections": {
+      "get": {
+        "summary": "Get all offer sections",
+        "operationId": "getOfferSections",
+        "tags": ["Offer Sections"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Offer sections fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Offer sections fetched successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "hook": {
+                            "type": "string",
+                            "example": "Special Offer"
+                          },
+                          "title": {
+                            "type": "string",
+                            "example": "Get 50% Off"
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Limited time offer for new users."
+                          },
+                          "button_text": {
+                            "type": "string",
+                            "example": "Claim Offer"
+                          },
+                          "button_link": {
+                            "type": "string",
+                            "example": "https://website.com/claim-offer"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch offer sections."
+          }
+        }
+      }
+    },
+    "/offer-sections/{id}": {
+      "post": {
+        "summary": "Update a specific offer section",
+        "operationId": "updateOfferSection",
+        "tags": ["Offer Sections"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the offer section to update",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "hook": {
+                    "type": "string",
+                    "example": "Updated Special Offer"
+                  },
+                  "title": {
+                    "type": "string",
+                    "example": "Updated Get 70% Off"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Limited time offer for returning customers."
+                  },
+                  "button_text": {
+                    "type": "string",
+                    "example": "Claim Now"
+                  },
+                  "button_link": {
+                    "type": "string",
+                    "example": "https://website.com/claim-now"
+                  },
+                  "alt_text": {
+                    "type": "string",
+                    "example": "Updated image description"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "image_title": {
+                    "type": "string",
+                    "example": "New Offer Image"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Offer section updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Offer section updated successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "hook": {
+                          "type": "string",
+                          "example": "Updated Special Offer"
+                        },
+                        "title": {
+                          "type": "string",
+                          "example": "Updated Get 70% Off"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Limited time offer for returning customers."
+                        },
+                        "button_text": {
+                          "type": "string",
+                          "example": "Claim Now"
+                        },
+                        "button_link": {
+                          "type": "string",
+                          "example": "https://website.com/claim-now"
+                        },
+                        "image": {
+                          "type": "string",
+                          "example": "/uploads/offersections/offer-image.jpg"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "404": {
+            "description": "Offer section not found."
+          },
+          "500": {
+            "description": "Internal server error. Failed to update offer section."
+          }
+        }
+      }
+    }, "/offer-requirements": {
+      "get": {
+        "summary": "Get all offer requirements",
+        "operationId": "getOfferRequirements",
+        "tags": ["Offer Requirements"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Offer requirements fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Offer requirements fetched successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "offer_section_id": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "text": {
+                            "type": "string",
+                            "example": "Requirement for the offer."
+                          },
+                          "sort_order": {
+                            "type": "integer",
+                            "example": 1
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch offer requirements."
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new offer requirement",
+        "operationId": "createOfferRequirement",
+        "tags": ["Offer Requirements"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "offer_section_id": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "text": {
+                    "type": "string",
+                    "example": "Requirement for the new offer."
+                  },
+                  "sort_order": {
+                    "type": "integer",
+                    "example": 0
+                  }
+                },
+                "required": ["offer_section_id", "text"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Offer requirement created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Offer requirement created successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "offer_section_id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "text": {
+                          "type": "string",
+                          "example": "Requirement for the new offer."
+                        },
+                        "sort_order": {
+                          "type": "integer",
+                          "example": 0
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to create offer requirement."
+          }
+        }
+      }
+    },
+    "/offer-requirements/{id}": {
+      "get": {
+        "summary": "Get a specific offer requirement",
+        "operationId": "getOfferRequirement",
+        "tags": ["Offer Requirements"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the offer requirement to fetch",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Offer requirement fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Offer requirement fetched successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "offer_section_id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "text": {
+                          "type": "string",
+                          "example": "Requirement for the new offer."
+                        },
+                        "sort_order": {
+                          "type": "integer",
+                          "example": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "404": {
+            "description": "Offer requirement not found."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch offer requirement."
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a specific offer requirement",
+        "operationId": "updateOfferRequirement",
+        "tags": ["Offer Requirements"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the offer requirement to update",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "offer_section_id": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "text": {
+                    "type": "string",
+                    "example": "Updated requirement text."
+                  },
+                  "sort_order": {
+                    "type": "integer",
+                    "example": 1
+                  }
+                },
+                "required": ["offer_section_id", "text"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Offer requirement updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Offer requirement updated successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "offer_section_id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "text": {
+                          "type": "string",
+                          "example": "Updated requirement text."
+                        },
+                        "sort_order": {
+                          "type": "integer",
+                          "example": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "404": {
+            "description": "Offer requirement not found."
+          },
+          "500": {
+            "description": "Internal server error. Failed to update offer requirement."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a specific offer requirement",
+        "operationId": "deleteOfferRequirement",
+        "tags": ["Offer Requirements"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the offer requirement to delete",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Offer requirement deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Offer requirement deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "404": {
+            "description": "Offer requirement not found."
+          },
+          "500": {
+            "description": "Internal server error. Failed to delete offer requirement."
+          }
+        }
+      }
+    }, "/site_metadata": {
+      "get": {
+        "summary": "Get site metadata",
+        "operationId": "getSiteMetadata",
+        "tags": ["Site Metadata"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Site metadata fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Site metadata fetched successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "example": "My Website"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Website description here."
+                        },
+                        "keywords": {
+                          "type": "string",
+                          "example": "website, tech, API"
+                        },
+                        "logo": {
+                          "type": "string",
+                          "example": "/uploads/site_metadata/logo.jpg"
+                        },
+                        "favicon": {
+                          "type": "string",
+                          "example": "/uploads/site_metadata/favicon.ico"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch site metadata."
+          }
+        }
+      }
+    },
+    "/site_metadata/{id}": {
+      "post": {
+        "summary": "Update site metadata",
+        "operationId": "updateSiteMetadata",
+        "tags": ["Site Metadata"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the site metadata to update",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "My New Website"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Updated description for the website."
+                  },
+                  "keywords": {
+                    "type": "string",
+                    "example": "new, website, tech"
+                  },
+                  "logo_alt_text": {
+                    "type": "string",
+                    "example": "New website logo"
+                  },
+                  "logo_title": {
+                    "type": "string",
+                    "example": "Logo of My New Website"
+                  },
+                  "favicon_alt_text": {
+                    "type": "string",
+                    "example": "Website favicon"
+                  },
+                  "favicon_title": {
+                    "type": "string",
+                    "example": "Favicon of My New Website"
+                  }
+                },
+                "required": ["name", "description", "keywords"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Site metadata updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Site metadata updated successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "example": "My New Website"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Updated description for the website."
+                        },
+                        "keywords": {
+                          "type": "string",
+                          "example": "new, website, tech"
+                        },
+                        "logo": {
+                          "type": "string",
+                          "example": "/uploads/site_metadata/logo.jpg"
+                        },
+                        "favicon": {
+                          "type": "string",
+                          "example": "/uploads/site_metadata/favicon.ico"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "404": {
+            "description": "Site metadata not found."
+          },
+          "500": {
+            "description": "Internal server error. Failed to update site metadata."
+          }
+        }
+      }
+    }, "/why-us-items": {
+      "get": {
+        "summary": "Get all 'Why Us' items",
+        "operationId": "getAllWhyUsItems",
+        "tags": ["Why Us Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully fetched all 'Why Us' items",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Why Us items fetched successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/WhyUsItem"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch 'Why Us' items."
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new 'Why Us' item",
+        "operationId": "createWhyUsItem",
+        "tags": ["Why Us Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/StoreWhyUsItemRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "'Why Us' item created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhyUsItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to create 'Why Us' item."
+          }
+        }
+      }
+    },
+    "/why-us-items/{id}": {
+      "get": {
+        "summary": "Get a 'Why Us' item by ID",
+        "operationId": "getWhyUsItemById",
+        "tags": ["Why Us Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the 'Why Us' item to fetch",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "'Why Us' item fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhyUsItem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "'Why Us' item not found"
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch 'Why Us' item."
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a 'Why Us' item by ID",
+        "operationId": "updateWhyUsItem",
+        "tags": ["Why Us Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the 'Why Us' item to update",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/StoreWhyUsItemRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "'Why Us' item updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhyUsItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "404": {
+            "description": "'Why Us' item not found"
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to update 'Why Us' item."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a 'Why Us' item by ID",
+        "operationId": "deleteWhyUsItem",
+        "tags": ["Why Us Items"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the 'Why Us' item to delete",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "'Why Us' item deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "'Why Us' item deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "'Why Us' item not found"
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to delete 'Why Us' item."
+          }
+        }
+      }
+    },   "/temptation-requirements": {
+      "get": {
+        "summary": "Get all Temptation requirements",
+        "operationId": "getAllTemptationRequirements",
+        "tags": ["Temptation Requirement"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully fetched all temptation requirements",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Temptation requirements fetched successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/TemptationRequirement"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch temptation requirements."
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new Temptation requirement",
+        "operationId": "createTemptationRequirement",
+        "tags": ["Temptation Requirement"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TemptationRequirementRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successfully created temptation requirement",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemptationRequirement"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to create temptation requirement."
+          }
+        }
+      }
+    },
+    "/temptation-requirements/{id}": {
+      "get": {
+        "summary": "Get a Temptation requirement by ID",
+        "operationId": "getTemptationRequirementById",
+        "tags": ["Temptation Requirement"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the temptation requirement to retrieve",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Temptation requirement fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemptationRequirement"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Temptation requirement not found"
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to fetch temptation requirement."
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a Temptation requirement by ID",
+        "operationId": "updateTemptationRequirement",
+        "tags": ["Temptation Requirement"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the temptation requirement to update",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TemptationRequirementRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Temptation requirement updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemptationRequirement"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid data."
+          },
+          "404": {
+            "description": "Temptation requirement not found"
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to update temptation requirement."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a Temptation requirement by ID",
+        "operationId": "deleteTemptationRequirement",
+        "tags": ["Temptation Requirement"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the temptation requirement to delete",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Temptation requirement deleted successfully"
+          },
+          "404": {
+            "description": "Temptation requirement not found"
+          },
+          "401": {
+            "description": "Unauthorized. Missing or invalid token."
+          },
+          "500": {
+            "description": "Internal server error. Failed to delete temptation requirement."
+          }
+        }
+      }
+    }, "/testimonials-sections": {
+      "get": {
+        "tags": ["Testimonials Sections"],
+        "summary": "Fetch all testimonials sections",
+        "operationId": "getTestimonialsSections",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully fetched all testimonials sections",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Testimonials sections fetched successfully",
+                  "data": [
+                    {
+                      "id": 1,
+                      "hook": "Testimonial Hook",
+                      "title": "Testimonial Title",
+                      "description": "Description of the testimonial",
+                      "created_at": "2021-01-01T00:00:00Z",
+                      "updated_at": "2021-01-01T00:00:00Z"
+                    }
+                  ],
+                  "meta": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to fetch testimonials sections",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Failed to fetch testimonials sections",
+                  "data": [],
+                  "meta": {
+                    "error": "Error message from server"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/testimonials-sections/{id}": {
+      "post": {
+        "tags": ["Testimonials Sections"],
+        "summary": "Update a specific testimonials section by id",
+        "operationId": "updateTestimonialsSection",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the testimonials section to update",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "hook": "Updated Testimonial Hook",
+                "title": "Updated Testimonial Title",
+                "description": "Updated testimonial description"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully updated testimonials section",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Testimonials section updated successfully",
+                  "data": {
+                    "id": 1,
+                    "hook": "Updated Testimonial Hook",
+                    "title": "Updated Testimonial Title",
+                    "description": "Updated testimonial description",
+                    "created_at": "2021-01-01T00:00:00Z",
+                    "updated_at": "2021-01-01T00:00:00Z"
+                  },
+                  "meta": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Validation error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Validation failed",
+                  "data": [],
+                  "meta": {
+                    "error": "Validation error message"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or expired token",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Unauthorized",
+                  "data": [],
+                  "meta": {
+                    "error": "Invalid authentication token"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to update testimonials section",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Failed to update testimonials section",
+                  "data": [],
+                  "meta": {
+                    "error": "Error message from server"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },  "/testimonials": {
+      "get": {
+        "tags": ["Testimonials"],
+        "summary": "Fetch all testimonials",
+        "operationId": "getAllTestimonials",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully fetched all testimonials",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Testimonials fetched successfully.",
+                  "data": [
+                    {
+                      "id": 1,
+                      "name": "John Doe",
+                      "position": "CEO",
+                      "text": "Great product!",
+                      "created_at": "2021-01-01T00:00:00Z",
+                      "updated_at": "2021-01-01T00:00:00Z"
+                    }
+                  ],
+                  "meta": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to fetch testimonials",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Failed to fetch testimonials",
+                  "error": "Error message from server"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Testimonials"],
+        "summary": "Create a new testimonial",
+        "operationId": "createTestimonial",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "testimonials_section_id": 1,
+                "text": "Great product!",
+                "name": "John Doe",
+                "position": "CEO",
+                "duration_seconds": 60,
+                "sort_order": 1,
+                "is_active": true,
+                "video": "video file",
+                "alt_text": "Testimonial video",
+                "title": "CEO Testimonial"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successfully created testimonial",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Testimonial created successfully.",
+                  "data": {
+                    "id": 1,
+                    "name": "John Doe",
+                    "position": "CEO",
+                    "text": "Great product!",
+                    "created_at": "2021-01-01T00:00:00Z",
+                    "updated_at": "2021-01-01T00:00:00Z"
+                  },
+                  "meta": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Failed to create testimonial",
+                  "error": "Validation error message"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/testimonials/{id}": {
+      "get": {
+        "tags": ["Testimonials"],
+        "summary": "Get testimonial by ID",
+        "operationId": "getTestimonialById",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the testimonial",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully fetched testimonial",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Testimonial fetched successfully.",
+                  "data": {
+                    "id": 1,
+                    "name": "John Doe",
+                    "position": "CEO",
+                    "text": "Great product!",
+                    "created_at": "2021-01-01T00:00:00Z",
+                    "updated_at": "2021-01-01T00:00:00Z"
+                  },
+                  "meta": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Testimonial not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Testimonial not found",
+                  "error": "Error message from server"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Testimonials"],
+        "summary": "Update testimonial by ID",
+        "operationId": "updateTestimonial",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the testimonial",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "text": "Updated testimonial text",
+                "name": "Updated Name",
+                "position": "Updated Position",
+                "duration_seconds": 120,
+                "sort_order": 2,
+                "is_active": true,
+                "alt_text": "Updated alt text",
+                "title": "Updated Title"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully updated testimonial",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Testimonial updated successfully.",
+                  "data": {
+                    "id": 1,
+                    "text": "Updated testimonial text",
+                    "name": "Updated Name",
+                    "position": "Updated Position",
+                    "created_at": "2021-01-01T00:00:00Z",
+                    "updated_at": "2021-01-01T00:00:00Z"
+                  },
+                  "meta": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Validation error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Validation failed",
+                  "data": [],
+                  "meta": {
+                    "error": "Validation error message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Testimonials"],
+        "summary": "Delete testimonial by ID",
+        "operationId": "deleteTestimonial",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the testimonial",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted testimonial",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Testimonial deleted successfully",
+                  "data": [],
+                  "meta": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Testimonial not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Testimonial not found",
+                  "data": [],
+                  "meta": {
+                    "error": "Testimonial not found"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TemptationSection": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "hook": {
+            "type": "string",
+            "example": "Welcome to Our Site"
+          },
+          "title": {
+            "type": "string",
+            "example": "Amazing Offers"
+          },
+          "description": {
+            "type": "string",
+            "example": "Check out the best offers we have for you."
+          },
+          "button1_text": {
+            "type": "string",
+            "example": "Learn More"
+          },
+          "button1_link": {
+            "type": "string",
+            "example": "https://yourdomain.com/learn-more"
+          },
+          "button2_text": {
+            "type": "string",
+            "example": "Sign Up"
+          },
+          "button2_link": {
+            "type": "string",
+            "example": "https://yourdomain.com/sign-up"
+          },
+          "image": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "example": "/uploads/temptation/image.jpg"
+              }
+            }
+          }
+        }
+      },
+      "TemptationSectionUpdateRequest": {
+         "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+        "type": "object",
+        "properties": {
+          "hook": {
+            "type": "string",
+            "example": "Updated Hook Text"
+          },
+          "title": {
+            "type": "string",
+            "example": "Updated Title"
+          },
+          "description": {
+            "type": "string",
+            "example": "Updated description text."
+          },
+          "button1_text": {
+            "type": "string",
+            "example": "Updated Button Text"
+          },
+          "button1_link": {
+            "type": "string",
+            "example": "https://updated-link.com"
+          },
+          "button2_text": {
+            "type": "string",
+            "example": "Updated Button 2 Text"
+          },
+          "button2_link": {
+            "type": "string",
+            "example": "https://updated-link-2.com"
+          },
+          "image": {
+            "type": "string",
+            "format": "binary"
+          },
+          "image_title": {
+            "type": "string",
+            "example": "Updated Image Title"
+          },
+          "image_alt_text": {
+            "type": "string",
+            "example": "Updated Alt Text for Image"
+          }
+        },
+        "required": ["hook", "title", "description", "button1_text", "button1_link", "button2_text", "button2_link"]
+      }
+    }, "TemptationRequirement": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "temptation_section_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "text": {
+            "type": "string",
+            "example": "You must act fast!"
+          },
+          "sort_order": {
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "TemptationRequirementRequest": {
+        "type": "object",
+        "properties": {
+          "temptation_section_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "text": {
+            "type": "string",
+            "example": "You must act fast!"
+          },
+          "sort_order": {
+            "type": "integer",
+            "example": 1
+          }
+        },
+        "required": ["temptation_section_id", "text"]
+      }
+  },
+ 
+   
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ]
+}
