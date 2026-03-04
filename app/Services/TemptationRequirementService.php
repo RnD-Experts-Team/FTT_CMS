@@ -55,15 +55,7 @@ class TemptationRequirementService
             if (!$temptationRequirement) {
                 throw new \Exception('Temptation requirement not found.');
             }
-
-            // تحقق إذا كانت قيمة sort_order المدخلة موجودة مسبقًا
-            $existingRecord = TemptationRequirement::where('sort_order', $data['sort_order'])->first();
-
-            // إذا كانت موجودة، زد القيمة تدريجيًا حتى تجد قيمة غير مكررة
-            while ($existingRecord && $existingRecord->id != $temptationRequirement->id) {
-                $data['sort_order'] += 1; // زيادة 1 في القيمة
-                $existingRecord = TemptationRequirement::where('sort_order', $data['sort_order'])->first();
-            }
+            $this->ensureUniqueSortOrder($temptationRequirement, $data);
 
             // تحديث السجل بالقيم الجديدة
             $temptationRequirement->update($data);
@@ -73,7 +65,29 @@ class TemptationRequirementService
             throw new \Exception('Error updating temptation requirement: ' . $e->getMessage());
         }
     }
+     private function ensureUniqueSortOrder(TemptationRequirement $item, array &$data): void
+    {
+         if (!isset($data['sort_order'])) {
+            return;
+        }
 
+         if ((int) $data['sort_order'] === (int) $item->sort_order) {
+            return;
+        }
+
+         $existingItem = TemptationRequirement::where('sort_order', $data['sort_order'])
+            ->where('id', '!=', $item->id)
+            ->first();
+
+        while ($existingItem) {
+            $data['sort_order'] = (int) $data['sort_order'] + 1;
+
+            $existingItem = TemptationRequirement::where('sort_order', $data['sort_order'])
+                ->where('id', '!=', $item->id)
+                ->first();
+        }
+    }
+    
     public function destroy(int $id): bool
     {
         try {

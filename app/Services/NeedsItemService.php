@@ -44,28 +44,43 @@ class NeedsItemService
     }
   public function update(NeedsItem $item, array $data)
     {
-        // تحقق من أن sort_order تم تغييره
-        if (isset($data['sort_order']) && $data['sort_order'] != $item->sort_order) {
-            // تحقق إذا كان sort_order الجديد موجود
-            $existingItem = NeedsItem::where('sort_order', $data['sort_order'])->first();
-            
-            // إذا كان موجودًا، قم بزيادة القيمة حتى تصبح فريدة
-            if ($existingItem) {
-                do {
-                    $data['sort_order'] += 1;
-                    $existingItem = NeedsItem::where('sort_order', $data['sort_order'])->first();
-                } while ($existingItem);
-            }
-        }
-
+       
+        $this->ensureUniqueSortOrder($item,$data);
         // تحديث العنصر
         $item->update($data);
 
         // إعادة العنصر بعد التحديث
         return $item->refresh();
     }
+      private function ensureUniqueSortOrder(NeedsItem $item,array &$data)
+        {    
+            if (!isset($data['sort_order'])) {
+                return;
+            }
 
-    public function delete(NeedsItem $item)
+            if ((int) $data['sort_order'] === (int) $item->sort_order) {
+                return;
+            }
+
+            $existingItem = NeedsItem::where('sort_order', $data['sort_order'])
+                ->where('id', '!=', $item->id)
+                ->first();
+
+            while ($existingItem) {
+                $data['sort_order'] = (int) $data['sort_order'] + 1;
+
+                $existingItem = NeedsItem::where('sort_order', $data['sort_order'])
+                    ->where('id', '!=', $item->id)
+                    ->first();
+            }
+        
+
+        
+        }
+
+   
+   
+        public function delete(NeedsItem $item)
     {
         $item->delete();
     }

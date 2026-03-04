@@ -13,6 +13,7 @@ class StoreTestimonialRequest extends FormRequest
 
     public function rules(): array
     {
+        
         return [
             'testimonials_section_id' => 'required|exists:testimonials_sections,id',
             'text' => 'required|string|max:1000',

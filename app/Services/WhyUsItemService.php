@@ -79,17 +79,8 @@ class WhyUsItemService
                 ]);
                 $data['icon_media_id'] = $media->id;
             }
-
-            // **التحقق من قيمة sort_order**
-            if (isset($data['sort_order'])) {
-                $existingRecord = WhyUsItem::where('sort_order', $data['sort_order'])->first();
-                // إذا كانت قيمة sort_order موجودة بالفعل في سجلات أخرى، نزيدها تدريجيًا
-                while ($existingRecord && $existingRecord->id != $item->id) {
-                    $data['sort_order'] += 1; // زيادة 1 في القيمة
-                    $existingRecord = WhyUsItem::where('sort_order', $data['sort_order'])->first();
-                }
-            }
-
+            $this->ensureUniqueSortOrder($item,$data);
+           
             // تحديث السجل بالقيم الجديدة
             $item->update($data);
             return $item;
@@ -97,6 +88,31 @@ class WhyUsItemService
             throw new \Exception('Error updating why us item: ' . $e->getMessage());
         }
     }
+     private function ensureUniqueSortOrder(WhyUsItem $item,array &$data)
+        {    
+            if (!isset($data['sort_order'])) {
+                return;
+            }
+
+            if ((int) $data['sort_order'] === (int) $item->sort_order) {
+                return;
+            }
+
+            $existingItem = WhyUsItem::where('sort_order', $data['sort_order'])
+                ->where('id', '!=', $item->id)
+                ->first();
+
+            while ($existingItem) {
+                $data['sort_order'] = (int) $data['sort_order'] + 1;
+
+                $existingItem = WhyUsItem::where('sort_order', $data['sort_order'])
+                    ->where('id', '!=', $item->id)
+                    ->first();
+            }
+        
+
+        
+        }
 
     public function destroy(int $id): bool
     {
