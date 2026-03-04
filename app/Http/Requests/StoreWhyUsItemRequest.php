@@ -19,7 +19,7 @@ class StoreWhyUsItemRequest extends FormRequest
             'is_active' => 'required|boolean',
             'alt_text' => 'nullable|string|max:255',
             'title' => 'nullable|string|max:255',
-            'icon' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // للتأكد من أن الصورة تم تحميلها بشكل صحيح
+            'icon' => 'nullable|file'
         ];
     }
 }
