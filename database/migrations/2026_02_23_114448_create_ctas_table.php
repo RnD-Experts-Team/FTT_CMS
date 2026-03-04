@@ -17,8 +17,8 @@ return new class extends Migration
             $table->text('description');
             $table->string('button1_text', 100);
             $table->string('button1_link', 1024);
-            $table->string('button2_text', 100);
-            $table->string('button2_link', 1024);
+            $table->string('button2_text', 100)->nullable();
+            $table->string('button2_link', 1024)->nullable();
             $table->integer('sort_order')->default(0);
             $table->tinyInteger('is_active')->default(1);
             $table->timestamp('created_at')->useCurrent();
