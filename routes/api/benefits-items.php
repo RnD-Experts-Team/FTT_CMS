@@ -10,7 +10,6 @@ Route::middleware('auth:sanctum')
         Route::get('/', [BenefitsItemController::class, 'index']);
         Route::get('/{benefitsItem}', [BenefitsItemController::class, 'show']);
         Route::post('/', [BenefitsItemController::class, 'store']);
-        Route::put('/{benefitsItem}', [BenefitsItemController::class, 'update']);
+        Route::post('/{benefitsItem}', [BenefitsItemController::class, 'update']);
         Route::delete('/{benefitsItem}', [BenefitsItemController::class, 'destroy']);
-
     });
