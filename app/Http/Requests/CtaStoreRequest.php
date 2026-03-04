@@ -18,8 +18,8 @@ class CtaStoreRequest extends FormRequest
             'description'   => ['required', 'string'],
             'button1_text'  => ['required', 'string', 'max:100'],
             'button1_link'  => ['required', 'string', 'max:1024'],
-            'button2_text'  => ['required', 'string', 'max:100'],
-            'button2_link'  => ['required', 'string', 'max:1024'],
+            'button2_text'  => ['nullable', 'string', 'max:100'],
+            'button2_link'  => ['nullable', 'string', 'max:1024'],
             'sort_order'    => ['nullable', 'integer'],
             'is_active'     => ['nullable', 'in:0,1'],
         ];

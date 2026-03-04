@@ -27,8 +27,8 @@ class CtaUpdateRequest extends FormRequest
             'description'   => ['sometimes', 'required', 'string'],
             'button1_text'  => ['sometimes', 'required', 'string', 'max:100'],
             'button1_link'  => ['sometimes', 'required', 'string', 'max:1024'],
-            'button2_text'  => ['sometimes', 'required', 'string', 'max:100'],
-            'button2_link'  => ['sometimes', 'required', 'string', 'max:1024'],
+            'button2_text'  => ['sometimes', 'nullable', 'string', 'max:100'],
+            'button2_link'  => ['sometimes', 'nullable', 'string', 'max:1024'],
             'sort_order'    => ['sometimes', 'required', 'integer'],
             'is_active'     => ['sometimes', 'required', 'in:0,1'],
         ];

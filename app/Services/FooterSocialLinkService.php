@@ -19,17 +19,31 @@ class FooterSocialLinkService
 
     public function update(FooterSocialLink $link, array $data)
     {
-         // Check if the sort_order is already in use
-        $existingItem = FooterSocialLink::where('sort_order', $data['sort_order'])->first();
-        
-        // If the sort_order already exists, increment it until it's unique
-        if ($existingItem) {
-            do {
-                $data['sort_order'] += 1;
-                $existingItem = FooterSocialLink::where('sort_order', $data['sort_order'])->first();
-            } while ($existingItem);
-        }
+        $this->ensureUniqueSortOrder($link, $data);
+ 
         $link->update($data);
         return $link->refresh();
+    }
+     private function ensureUniqueSortOrder(FooterSocialLink $link, array &$data): void
+    {
+         if (!isset($data['sort_order'])) {
+            return;
+        }
+
+         if ((int) $data['sort_order'] === (int) $link->sort_order) {
+            return;
+        }
+
+         $existingItem = FooterSocialLink::where('sort_order', $data['sort_order'])
+            ->where('id', '!=', $link->id)
+            ->first();
+
+        while ($existingItem) {
+            $data['sort_order'] = (int) $data['sort_order'] + 1;
+
+            $existingItem = FooterSocialLink::where('sort_order', $data['sort_order'])
+                ->where('id', '!=', $link->id)
+                ->first();
+        }
     }
 }

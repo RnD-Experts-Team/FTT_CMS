@@ -75,43 +75,39 @@ class TestimonialService
     {
         $testimonial = Testimonial::findOrFail($id);
 
-        // Check if the sort_order is already in use
-        $existingItem = Testimonial::where('sort_order', $data['sort_order'])->first();
-        
-        // If the sort_order already exists, increment it until it's unique
-        if ($existingItem) {
-            do {
+         if (isset($data['sort_order']) && $data['sort_order'] != $testimonial->sort_order) {
+
+            $existingItem = Testimonial::where('sort_order', $data['sort_order'])
+                ->where('id', '!=', $testimonial->id)
+                ->first();
+
+            while ($existingItem) {
                 $data['sort_order'] += 1;
-                $existingItem = Testimonial::where('sort_order', $data['sort_order'])->first();
-            } while ($existingItem);
+
+                $existingItem = Testimonial::where('sort_order', $data['sort_order'])
+                    ->where('id', '!=', $testimonial->id)
+                    ->first();
+            }
         }
 
-        // إذا كان هناك فيديو جديد، نقوم بحذفه من جدول Media
-        if (isset($data['video'])) {
+         if (isset($data['video'])) {
             if ($testimonial->video) {
-                // 1) حذف الفيديو القديم
                 if (Storage::disk('public')->exists($testimonial->video->path)) {
                     Storage::disk('public')->delete($testimonial->video->path);
                 }
-                // 2) حذف السجل القديم من جدول Media
                 $testimonial->video->delete();
             }
 
-            // 3) تخزين الفيديو الجديد
             $file = $data['video'];
 
-            // 4) تأكد أن المجلد موجود
             if (!Storage::disk('public')->exists('uploads/videos')) {
                 Storage::disk('public')->makeDirectory('uploads/videos');
             }
 
-            // 5) استخراج أبعاد الفيديو من الملف المؤقت
             [$width, $height] = $this->getVideoDimensionsWithGetID3($file->getRealPath());
 
-            // 6) تخزين الفيديو الجديد
             $path = $file->store('uploads/videos', 'public');
 
-            // 7) إنشاء سجل Media للفيديو الجديد
             $media = Media::create([
                 'path' => $path,
                 'type' => 'video',
@@ -123,16 +119,16 @@ class TestimonialService
                 'title' => $data['title'] ?? 'Testimonial Video',
             ]);
 
-            // إضافة video_media_id إلى البيانات
             $data['video_media_id'] = $media->id;
+ 
+            unset($data['video']);
         }
+         $testimonial->update($data);
+        $testimonial->refresh()->load('video');
 
-        // تحديث بيانات الـ Testimonial (ما عدا الفيديو)
-        $testimonial->update(collect($data)->except('video')->toArray());
 
         return $testimonial;
     }
-
     public function delete(int $id)
     {
         $testimonial = Testimonial::findOrFail($id);

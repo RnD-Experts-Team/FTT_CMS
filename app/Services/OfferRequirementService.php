@@ -40,22 +40,39 @@ class OfferRequirementService
             if (!$requirement) {
                 throw new \Exception('Offer requirement not found.');
             }
-
-            // التعامل مع sort_order للتأكد من أنه فريد
-            if (isset($data['sort_order'])) {
-                $existingRecord = OfferRequirement::where('sort_order', $data['sort_order'])->first();
-                while ($existingRecord && $existingRecord->id != $requirement->id) {
-                    $data['sort_order'] += 1; // زيادة 1 في القيمة
-                    $existingRecord = OfferRequirement::where('sort_order', $data['sort_order'])->first();
-                }
-            }
-
+            $this->ensureUniqueSortOrder($requirement,$data);
             $requirement->update($data);
             return $requirement;
         } catch (Throwable $e) {
             throw new \Exception('Error updating offer requirement: ' . $e->getMessage());
         }
     }
+    private function ensureUniqueSortOrder(OfferRequirement $requirement,array &$data)
+        {    
+            if (!isset($data['sort_order'])) {
+                return;
+            }
+
+            if ((int) $data['sort_order'] === (int) $requirement->sort_order) {
+                return;
+            }
+
+            $existingItem = OfferRequirement::where('sort_order', $data['sort_order'])
+                ->where('id', '!=', $requirement->id)
+                ->first();
+
+            while ($existingItem) {
+                $data['sort_order'] = (int) $data['sort_order'] + 1;
+
+                $existingItem = OfferRequirement::where('sort_order', $data['sort_order'])
+                    ->where('id', '!=', $requirement->id)
+                    ->first();
+            }
+        
+
+        
+        }
+
 
     public function destroy(int $id): bool
     {
