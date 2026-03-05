@@ -18,6 +18,7 @@ class GallerySectionService
 
             // تحديث السجل
             $gallerySection->update($data);
+
             return $gallerySection;
         } catch (Throwable $e) {
             throw new \Exception('Error updating gallery section: ' . $e->getMessage());

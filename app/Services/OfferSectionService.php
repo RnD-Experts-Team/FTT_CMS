@@ -49,6 +49,8 @@ class OfferSectionService
 
             // تحديث السجل بالبيانات الجديدة
             $section->update($data);
+            $section->refresh()->load('image');
+
             return $section;
         } catch (Throwable $e) {
             throw new \Exception('Error updating offer section: ' . $e->getMessage());

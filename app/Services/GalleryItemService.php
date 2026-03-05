@@ -124,6 +124,8 @@ use Illuminate\Support\Facades\DB;
                     // حذف الصورة من جدول media
                     $galleryItem->image->delete();
                 }
+                $galleryItem->refresh()->load('image');
+
 
                 return $galleryItem;
             });
