@@ -72,13 +72,16 @@ class HomeDataService
         $testimonialsSection = TestimonialsSection::with('testimonials.video')->first();
         $testimonialsData = $testimonialsSection->testimonials->map(function ($testimonial) {
             return [
-                'video_media_id' => $testimonial->video_media_id,
                 'text' => $testimonial->text,
                 'name' => $testimonial->name,
                 'position' => $testimonial->position,
                 'duration_seconds' => $testimonial->duration_seconds,
                 'sort_order' => $testimonial->sort_order,
                 'is_active' => $testimonial->is_active,
+                'video_media_id' => $testimonial->video_media_id,
+                 'video' => [
+                'url' => $testimonial->video->url,  
+              ]
             ];
         });
 
@@ -139,27 +142,33 @@ class HomeDataService
        // Benefits Section
         $benefitsSection = BenefitsSection::with('items')->first();
         $benefitsSectionData = [
+            'title' => $benefitsSection->title,
+            'hook' => $benefitsSection->hook,
             'items' => $benefitsSection->items->map(function ($item) {
                 return ['text' => $item->text];
             })
         ];
-
-            // Needs Section
-        $needsSection = NeedsSection::all()->map(function ($item) {
-            return ['text' => $item->text];
-        });
-
-         $needsSectionData = [
-            'items' => $needsSection
+        $needsSection = NeedsSection::with('items')->first();   
+        $needsSectionData = [
+            'title' => $needsSection->title,    
+            'hook' => $needsSection->hook,     
+            'items' => $needsSection->items->map(function ($item) {
+                return [
+                    'text' => $item->text
+                ];
+            })
         ];
 
         // Founder Section
-        $founderSection = FounderSection::with('video')->first();
+       $founderSection = FounderSection::with('video')->first();
         $founderSectionData = [
             'hook_text' => $founderSection->hook_text,
             'title' => $founderSection->title,
             'description' => $founderSection->description,
             'video_media_id' => $founderSection->video_media_id,
+            'video' => [
+                'url' => $founderSection->video->url,  
+              ]
         ];
 
         return response()->json([
