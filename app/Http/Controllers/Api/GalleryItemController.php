@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreGalleryItemRequest;
+use App\Http\Requests\UpdateGalleryItemRequest;
 use App\Services\GalleryItemService;
 use Illuminate\Http\JsonResponse;
 use Throwable;
@@ -83,7 +84,7 @@ class GalleryItemController extends Controller
     }
 
     // تحديث العنصر
-    public function update(StoreGalleryItemRequest $request, int $id): JsonResponse
+    public function update(UpdateGalleryItemRequest $request, int $id): JsonResponse
     {
         try {
             $data = $request->validated();
