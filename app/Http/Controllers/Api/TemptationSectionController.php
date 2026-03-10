@@ -40,14 +40,11 @@ class TemptationSectionController extends Controller
     public function update(TemptationSectionUpdateRequest $request, TemptationSection $temptationSection): JsonResponse
     {
         try {
-            // الحصول على البيانات المدخلة (مثل النصوص، روابط الأزرار، إلخ)
-            $data = $request->validated();
+             $data = $request->validated();
 
-            // إذا كانت الصورة موجودة، نقوم بتخزينها وتحديث رابط الصورة
-            if ($request->hasFile('image')) {
-                // تخزين الصورة الجديدة
-                $image = $this->service->storeImage($request->file('image'), $data['image_title'], $data['image_alt_text']);
-                $data['image_media_id'] = $image->id; // ربط الصورة الجديدة
+             if ($request->hasFile('image')) {
+                 $image = $this->service->storeImage($request->file('image'), $data['image_title'] ?? 'title', $data['image_alt_text'] ?? 'alt');
+                $data['image_media_id'] = $image->id;  
             }
 
             // تحديث البيانات في الجدول

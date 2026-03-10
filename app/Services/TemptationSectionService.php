@@ -23,9 +23,10 @@ class TemptationSectionService
                     $this->deleteOldImage($oldImage);  
                 }
             }
-             $image = $this->storeImage($data['image'], $data['title'] ?? '', $data['alt_text'] ?? '');
+             $image = $this->storeImage($data['image'], $data['image_title'] ?? 'image_title', $data['image_alt_text'] ?? 'alt_text');
              $data['image_media_id'] = $image->id;
         }
+        
 
 
          $section->update($data);
@@ -49,8 +50,8 @@ class TemptationSectionService
             'width' => $width,
             'height' => $height,
             'size_bytes' => $file->getSize(),
-            'alt_text' => $altText,
-            'title' => $title,
+            'alt_text' => $altText?? 'Alt text for alt ',
+            'title' => $title??'Alt text for title',
         ]);
     }
 
